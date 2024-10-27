@@ -1,0 +1,16 @@
+<!-- user/templates/register.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register</title>
+</head>
+<body>
+  <h1>Register Here</h1>
+  <form method="POST" autocomplete="off">
+    {% csrf_token %}
+    {{ registerForm.as_p }}  <!-- Will include first name, last name, and email now -->
+    <input type="submit" value="Register">
+  </form>
+</body>
+</html>

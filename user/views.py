@@ -1,24 +1,21 @@
+# user/views.py
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from . forms import createUserForm
+from .forms import createUserForm
+from django.contrib.auth.decorators import login_required
 
-# Create your views here.
-
-
+# user/views.py
 def register(request):
-
     form = createUserForm()
 
     if request.method == 'POST':
         form = createUserForm(request.POST)
-
         if form.is_valid():
             form.save()
             return redirect('login')
 
-    context = {'registerForm':form}
+    context = {'registerForm': form}
+    return render(request, 'registration/register.html', context)  # Update path here
 
-    return render(request, 'register.html', context)
-
-
-
+@login_required
+def profile(request):
+    return render(request, 'profile.html')
