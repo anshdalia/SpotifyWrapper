@@ -1,0 +1,17 @@
+<!-- user/templates/welcome.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome</title>
+</head>
+<body>
+    <h1>Welcome</h1>
+    <p>Welcome to our application! Please login or register to continue.</p>
+
+    <div>
+        <button onclick="window.location.href='{% url 'login' %}'">Login</button>
+        <button onclick="window.location.href='{% url 'register' %}'">Register</button>
+    </div>
+</body>
+</html>
