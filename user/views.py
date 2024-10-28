@@ -4,6 +4,9 @@ from .forms import createUserForm
 from django.contrib.auth.decorators import login_required
 
 # user/views.py
+def welcome(request):
+    return render(request, 'welcome.html')
+
 def register(request):
     form = createUserForm()
 
