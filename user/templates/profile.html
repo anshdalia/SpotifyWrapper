@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+</head>
+<body>
+    <h1>Welcome to your Profile, {{ user.username }}!</h1>
+    <button onclick="window.location.href='{% url 'logout' %}'">Logout</button>
+    <button onclick="window.location.href='{% url 'main_menu' %}'">Back to Main Menu</button>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Menu</title>
+</head>
+<body>
+    <!-- Profile Icon -->
+    <div id="profile">
+        <img onclick="window.location.href='{% url 'profile' %}'" src="{{ profile_icon }}" alt="Profile Icon" style="width:50px; height:50px;">
+    </div>
+
+    <!-- Listening History -->
+    <h2>Listening History (Minutes)</h2>
+    <ul>
+        {% for minute in listening_history %}
+            <li>{{ minute }}</li>
+        {% empty %}
+            <li>No listening history available</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Top 5 Artists -->
+    <h2>Top 5 Artists</h2>
+    <ul>
+        {% for artist in top_artists %}
+            <li>{{ artist }}</li>
+        {% empty %}
+            <li>No top artists available</li>
+        {% endfor %}
+    </ul>
+    <button onclick="window.location.href='{% url 'single_wrap' %}'">Create a new Wrap</button>
+    <button onclick="window.location.href='{% url 'friend_request' %}'">Create a new Duo Wrap</button>
+</body>
+</html>
