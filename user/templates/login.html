@@ -1,16 +1,43 @@
 <!-- user/templates/login.html -->
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+    <link rel="stylesheet" href="{% static 'custom/custom.css' %}">
 </head>
 <body>
-    <h1>Login</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ loginform.as_p }}
-        <button type="submit">Login</button>
-    </form>
+
+
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-lg">
+
+                    <h1 class="text-center">Login</h1>
+
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ loginform.as_p }}
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </div>
+                    </form>
+
+                    <!-- Register Button -->
+                    <div class="d-grid gap-2 mt-3">
+                        <a href="{% url 'register' %}" class="btn btn-secondary">Register</a>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

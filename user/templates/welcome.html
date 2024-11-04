@@ -1,17 +1,37 @@
 <!-- user/templates/welcome.html -->
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Welcome</title>
+    <link rel="stylesheet" href="{% static 'custom/custom.css' %}">
 </head>
 <body>
-    <h1>Welcome</h1>
-    <p>Welcome to our application! Please login or register to continue.</p>
+    <div class="container text-center">
+        <div class="row justify-content-center">
+            <div class="col-md-3">
+                <br><br>
+                <img src="{% static 'images/Musicwrap_logo_with_name.png' %}" alt="Responsive Image" class="img-fluid">
+                <div class="row justify-content-center">
+                    <p>Find your vibe.</p>
+                <div class="col d-grid gap-2">
+                    <button onclick="window.location.href='{% url 'login' %}'" class="btn btn-primary btn-lg">Login</button>
+                </div>
+                <div class="col d-grid gap-2">
+                    <button onclick="window.location.href='{% url 'register' %}'" class="btn btn-secondary btn-lg">Register</button>
+                </div>
+            </div>
+            </div>
+        </div>
 
-    <div>
-        <button onclick="window.location.href='{% url 'login' %}'">Login</button>
-        <button onclick="window.location.href='{% url 'register' %}'">Register</button>
-    </div>
+
+
+
+
+        </div>
+
+
+
 </body>
 </html>

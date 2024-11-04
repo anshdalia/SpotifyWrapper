@@ -1,0 +1,10 @@
+$primary: #aaff00; /*primary button color*/
+$secondary: #00fff8; /*secondary button color*/
+$body-bg: #2A1F2D; /*page background color*/
+$body-color: #ffffff; /*default text color is white*/
+
+
+/* import bootstrap after all customization */
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+
+

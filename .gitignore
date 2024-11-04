@@ -86,3 +86,6 @@ coverage.xml
 
 # PyBuilder
 target/
+
+#npm installed packages
+node_modules
