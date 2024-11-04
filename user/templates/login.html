@@ -13,16 +13,23 @@
 
 
 <div class="container mt-5">
+    <br><br><br><br><br>
     <div class="row justify-content-center">
-        <div class="col-md-5">
+        <div class="col-md-4">
             <div class="card shadow-lg">
-
-                    <h1 class="text-center">Login</h1>
-
                 <div class="card-body">
                     <form method="post">
                         {% csrf_token %}
-                        {{ loginform.as_p }}
+
+                        <!-- Username Field -->
+                        <label for="{{ loginform.username.id_for_label }}" class="label">Username</label>
+                        {{ loginform.username }}
+
+                        <!-- Password Field -->
+                        <label for="{{ loginform.password.id_for_label }}" class="label">Password</label>
+                        {{ loginform.password }}
+
+                        <!-- Login Button -->
                         <div class="d-grid gap-2 mt-3">
                             <button type="submit" class="btn btn-primary">Login</button>
                         </div>
@@ -33,8 +40,8 @@
                         <a href="{% url 'register' %}" class="btn btn-secondary">Register</a>
                     </div>
 
-
                 </div>
+
             </div>
         </div>
     </div>

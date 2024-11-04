@@ -1,10 +1,32 @@
+/*
+IMPORTANT:
+Any changes to this file will require it to be recompiled into css. Use this
+command in the terminal with project dependencies installed to compile into css:
+sass static/custom/custom.scss static/custom/custom.css
+*/
+
+
 $primary: #aaff00; /*primary button color*/
 $secondary: #00fff8; /*secondary button color*/
 $body-bg: #2A1F2D; /*page background color*/
-$body-color: #ffffff; /*default text color is white*/
+$body-color: #00fff8; /*default text color is blue*/
 
 
-/* import bootstrap after all customization */
+/*sets style for list group bootstrap object*/
+.list-group-item {
+    border-color: #aaff00;
+}
+
+
+/* import bootstrap after making all modifications to bootstrap */
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
 
+
+/*sets style for django form fields*/
+.form-control {
+    color: #00fff8;
+    border: 1px solid #00fff8;
+    padding: 10px;
+    border-radius: 4px;
+}
 

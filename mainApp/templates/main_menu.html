@@ -1,36 +1,77 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main Menu</title>
+    <link rel="stylesheet" href="{% static 'custom/custom.css' %}">
 </head>
 <body>
-    <!-- Profile Icon -->
-    <div id="profile">
-        <img onclick="window.location.href='{% url 'profile' %}'" src="{{ profile_icon }}" alt="Profile Icon" style="width:50px; height:50px;">
+<div class="container-fluid">
+    <!-- header row -->
+    <div class="row">
+        <div class="col text-center" style="background-color: #0d6efd">
+            <br><br><br>header placeholder<br><br>
+        </div>
+        
     </div>
-
-    <!-- Listening History -->
-    <h2>Listening History (Minutes)</h2>
-    <ul>
-        {% for minute in listening_history %}
-            <li>{{ minute }}</li>
-        {% empty %}
-            <li>No listening history available</li>
-        {% endfor %}
-    </ul>
-
-    <!-- Top 5 Artists -->
-    <h2>Top 5 Artists</h2>
-    <ul>
-        {% for artist in top_artists %}
-            <li>{{ artist }}</li>
-        {% empty %}
-            <li>No top artists available</li>
-        {% endfor %}
-    </ul>
-    <button onclick="window.location.href='{% url 'single_wrap' %}'">Create a new Wrap</button>
-    <button onclick="window.location.href='{% url 'friend_request' %}'">Create a new Duo Wrap</button>
+    
+    <br>
+    
+    <div class="container">
+        <!-- buttons row -->
+        <div class="row">
+            <div class="col col-lg-2">
+                <button onclick="window.location.href='{% url 'single_wrap' %}'" class="btn btn-secondary">Create a new Wrap</button>
+            </div>
+            <div class="col col-lg-2">    
+                <button onclick="window.location.href='{% url 'friend_request' %}'" class="btn btn-secondary">Create a new Duo Wrap</button>
+            </div>
+            <div class="col col-lg-1 ms-auto">    
+                <button onclick="window.location.href='{% url 'profile' %}'" class="btn btn-primary">Profile</button>
+            </div>
+        </div>
+        <br>
+        
+        <!-- list row -->
+        <div class="row">
+            <ul class="list-group list-group-flush">
+                
+                <!-- list header -->
+              <li class="list-group-item text-center">
+                  Your Spotify Wraps
+              </li>
+                
+                <!-- list elements (with placeholder content) -->
+              <li class="list-group-item list-group-item-action" onclick="window.location.href='{% url 'single_wrap' %}'">
+                  <div class="row">
+                    <div class="col col-4">
+                        Wrap 1
+                    </div>
+                    <div class="col col-4">
+                        date created: 1/11/01
+                    </div>
+                    <div class="col col-4">
+                        made with: friends name
+                    </div>
+                  </div>
+                  
+              </li>
+              <li class="list-group-item list-group-item-action">
+                  Wrap 2
+              </li>
+              <li class="list-group-item list-group-item-action">
+                  Wrap 3
+              </li>
+              <li class="list-group-item list-group-item-action">
+                  Wrap 4
+              </li>
+            </ul>
+            
+        </div>
+    </div>
+</div>
 </body>
 </html>
