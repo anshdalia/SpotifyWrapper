@@ -60,4 +60,4 @@ def welcome(request):
 
 def logout(request):
     auth.logout(request)
-    return redirect('welcome')
+    return redirect('user:welcome')

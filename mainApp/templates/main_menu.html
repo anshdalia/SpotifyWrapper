@@ -15,9 +15,8 @@
         <div class="col text-center" style="background-color: #0d6efd">
             <br><br><br>header placeholder<br><br>
         </div>
-        
     </div>
-    
+    current user: {{ user.username }}
     <br>
     
     <div class="container">
@@ -30,7 +29,7 @@
                 <button onclick="window.location.href='{% url 'friend_request' %}'" class="btn btn-secondary">Create a new Duo Wrap</button>
             </div>
             <div class="col col-lg-1 ms-auto">    
-                <button onclick="window.location.href='{% url 'profile' %}'" class="btn btn-primary">Profile</button>
+                <button onclick="window.location.href='{% url 'user:profile' %}'" class="btn btn-primary">Profile</button>
             </div>
         </div>
         <br>
@@ -73,5 +72,22 @@
         </div>
     </div>
 </div>
+
+<script>
+    var is_authenticated;
+    function authenticateSpotify() {
+    fetch('/is-authenticated').then((response) => response.json()).then((data) => {
+        is_authenticated = data.status;
+        if (!data.status) {
+            fetch('/get-auth-url').then((response) => response.json()).then((data) => {
+                window.location.replace(data.url);
+            })
+        }
+    })
+    }
+    authenticateSpotify()
+    
+</script>
+
 </body>
 </html>
