@@ -6,7 +6,7 @@ Go to localhost/user/welcome to get to the welcome page
 # Development:
 When pushing local changes to the git hub always push to a new branch and then merge to main later.
 
-additions have been made to .env file. Add the new lines to the file for the project to work.
+Spotify Client ID, Client Secret, and Redirect URI variables have been added to the .env file. Add the new lines to the file for the project to work.
 the database had been flushed so any old accounts will have to be remade.
 
 
