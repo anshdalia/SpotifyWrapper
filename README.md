@@ -1,9 +1,14 @@
 # Setup Instructions:
 add the env file from discord to the project root and rename it to .env (add a period at the front). Don't leak it because 
 it contains the Django secret key and we are planning on hosting publicly in the future so security is important.
+Go to localhost/user/welcome to get to the welcome page
 
 # Development:
 When pushing local changes to the git hub always push to a new branch and then merge to main later.
+
+additions have been made to .env file. Add the new lines to the file for the project to work.
+the database had been flushed so any old accounts will have to be remade.
+
 
 # Design Mock Ups:
 Here is a link to webpage design examples:
