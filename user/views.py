@@ -18,7 +18,7 @@ def register(request):
 
         if form.is_valid():
             form.save()
-            return redirect('login')
+            return redirect('user:login')
 
     context = {'registerForm':form}
 

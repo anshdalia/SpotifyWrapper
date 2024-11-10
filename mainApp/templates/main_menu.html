@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main Menu</title>
     <link rel="stylesheet" href="{% static 'custom/custom.css' %}">
+    
 </head>
 <body>
 <div class="container-fluid">
@@ -16,9 +17,9 @@
             <br><br><br>header placeholder<br><br>
         </div>
     </div>
-    current user: {{ user.username }}
-    <br>
     
+    <br>
+
     <div class="container">
         <!-- buttons row -->
         <div class="row">
@@ -33,7 +34,10 @@
             </div>
         </div>
         <br>
-        
+
+        <!-- debug: demonstrates spotify api call is being successfully made-->
+        Display Name (From Your Spotify Account): <span id="displayName"></span>
+
         <!-- list row -->
         <div class="row">
             <ul class="list-group list-group-flush">
@@ -73,20 +77,14 @@
     </div>
 </div>
 
+<!-- javascript -->
+<script src="{% static 'js/script.js' %}"></script>
+
 <script>
-    var is_authenticated;
-    function authenticateSpotify() {
-    fetch('/is-authenticated').then((response) => response.json()).then((data) => {
-        is_authenticated = data.status;
-        if (!data.status) {
-            fetch('/get-auth-url').then((response) => response.json()).then((data) => {
-                window.location.replace(data.url);
-            })
-        }
-    })
-    }
     authenticateSpotify()
-    
+
+    var profile = fetchProfile("{{ spotify_token.access_token }}")
+    console.log(profile) //Debug, prints raw json
 </script>
 
 </body>
