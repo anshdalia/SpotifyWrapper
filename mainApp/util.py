@@ -1,3 +1,4 @@
+import requests  # <-- Make sure this line is here
 from requests import post
 
 from SpotifyWrapper.settings import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, REDIRECT_URI
@@ -39,12 +40,10 @@ def is_spotify_authenticated(request):
         if expiry <= timezone.now():
             print("Token expired; attempting to refresh...")
             refresh_spotify_token(token)
-            # Retrieve the updated token to confirm it refreshed
-            token = get_user_tokens(request.user)
+            token = get_user_tokens(request.user)  # Re-fetch the token to get the updated one
 
-        # Check again if token is still valid after attempting refresh
-        if token.expires_in > timezone.now():
-            return True
+        # Return True if the token is still valid after refreshing
+        return token.expires_in > timezone.now()
 
     print("User not authenticated with Spotify or token expired.")
     return False
@@ -52,18 +51,17 @@ def is_spotify_authenticated(request):
 # Makes a call to Spotify API to get a new, valid access_token and updates the Spotify_Token
 def refresh_spotify_token(token):
     refresh_token = token.refresh_token
-    
-    response = post('https://accounts.spotify.com/api/token', data={
+    response = requests.post('https://accounts.spotify.com/api/token', data={
         'grant_type': 'refresh_token',
         'refresh_token': refresh_token,
         'client_id': SPOTIFY_CLIENT_ID,
         'client_secret': SPOTIFY_CLIENT_SECRET,
     }).json()
-    
+
     access_token = response.get('access_token')
     token_type = response.get('token_type')
     expires_in = response.get('expires_in')
-    
+
     if access_token:
         print(f"New access token: {access_token}")
         if response.get('refresh_token') is not None:
@@ -72,3 +70,34 @@ def refresh_spotify_token(token):
         update_or_create_user_tokens(token.user, access_token, token_type, expires_in, refresh_token)
     else:
         print("Failed to refresh token:", response)
+
+def get_recently_played_tracks(user):
+    token = get_user_tokens(user)
+    headers = {
+        "Authorization": f"Bearer {token.access_token}"
+    }
+    params = {
+        "limit": 50  # Maximum limit for recent tracks
+    }
+    response = requests.get("https://api.spotify.com/v1/me/player/recently-played", headers=headers, params=params)
+    if response.status_code == 200:
+        return response.json().get('items', [])
+    else:
+        print("Failed to fetch recently played tracks:", response.json())
+        return []
+    
+def get_top_items(user, item_type='tracks', time_range='medium_term', limit=10):
+    token = get_user_tokens(user)
+    headers = {
+        "Authorization": f"Bearer {token.access_token}"
+    }
+    params = {
+        "time_range": time_range,
+        "limit": limit
+    }
+    response = requests.get(f"https://api.spotify.com/v1/me/top/{item_type}", headers=headers, params=params)
+    if response.status_code == 200:
+        return response.json().get('items', [])
+    else:
+        print(f"Failed to fetch top {item_type}:", response.json())
+        return []

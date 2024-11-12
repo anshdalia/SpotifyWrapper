@@ -75,15 +75,30 @@ class IsAuthenticated(APIView):
 @login_required(login_url='user:login')
 def main_menu(request):
     user = request.user
+    
+    # Check if the user is authenticated with Spotify and refresh the token if needed
+    if not is_spotify_authenticated(request):
+        return redirect('auth_url')  # Redirect to the Spotify authorization flow if not authenticated
+    
     spotify_token = get_user_tokens(user)
 
     # Debug statement to verify token retrieval
     print(f"Access token in main_menu for user {user}: {spotify_token.access_token if spotify_token else 'No token'}")
 
+    # Fetch Spotify data
+    recent_tracks = get_recently_played_tracks(user)
+    top_tracks = get_top_items(user, item_type='tracks')
+    top_artists = get_top_items(user, item_type='artists')
+
+    # Pass data to the template
     context = {
         'user': user,
         'spotify_token': spotify_token,
+        'recent_tracks': recent_tracks,
+        'top_tracks': top_tracks,
+        'top_artists': top_artists,
     }
+
     return render(request, 'main_menu.html', context)
 
 @login_required(login_url='user:login')
