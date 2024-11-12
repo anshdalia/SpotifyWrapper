@@ -61,3 +61,12 @@ def welcome(request):
 def logout(request):
     auth.logout(request)
     return redirect('welcome')
+
+def delete_account(request):
+    if request.user.is_authenticated:
+        user = request.user
+        logout(request)  # Log the user out before deleting their account
+        user.delete()  # Delete the user
+        return redirect('main_menu')
+    else:
+        return redirect('login')  # Redirect to login if not authenticated
