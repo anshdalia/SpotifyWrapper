@@ -84,6 +84,13 @@
     authenticateSpotify();
     var profile = fetchProfile("{{ spotify_token.access_token }}");
     console.log("Access token passed to fetchProfile:", "{{ spotify_token.access_token }}"); // Debug: print token in console
+    const topTracks = getTopTracks("{{ spotify_token.access_token }}");
+    console.log(
+  topTracks.map(
+    ({name, artists}) =>
+      `${name} by ${artists.map(artist => artist.name).join(', ')}`
+  )
+);
 </script>
 
 </body>
