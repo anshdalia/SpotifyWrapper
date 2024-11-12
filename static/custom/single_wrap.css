@@ -1,0 +1,223 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    overflow: hidden;
+}
+
+.carousel-container {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.carousel-slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+    color: white;
+    box-sizing: border-box;
+}
+
+/* Content wrapper to maintain consistent spacing */
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+    padding-bottom: 120px; /* Space for navigation */
+}
+
+.carousel-slide.active {
+    opacity: 1;
+}
+
+.welcome-slide { background: linear-gradient(45deg, #FF6B6B, #4ECDC4); }
+.artists-slide { background: linear-gradient(45deg, #845EC2, #D65DB1); }
+.songs-slide { background: linear-gradient(45deg, #FF6B6B, #FFE66D); }
+.genre-slide { background: linear-gradient(45deg, #00C9A7, #845EC2); }
+.minutes-slide { background: linear-gradient(45deg, #4ECDC4, #556270); }
+
+.transition-artists { background: linear-gradient(45deg, #9B72AA, #C17ECF); }
+.transition-songs { background: linear-gradient(45deg, #FF8E6B, #FFCF6D); }
+.transition-genre { background: linear-gradient(45deg, #00E1B9, #9B72AA); }
+.transition-minutes { background: linear-gradient(45deg, #4ECDC4, #6B7280); }
+
+.title {
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+}
+
+.highlight {
+    font-size: 4rem;
+    font-weight: 900;
+    margin: 2rem 0;
+}
+
+.top-list {
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0;
+    width: 100%;
+}
+
+.top-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.top-item:hover {
+    transform: scale(1.02);
+}
+
+.item-rank {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-right: 1rem;
+    min-width: 40px;
+}
+
+.item-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 5px;
+    margin-right: 1rem;
+    object-fit: cover;
+}
+
+.item-details {
+    flex-grow: 1;
+    text-align: left;
+}
+
+.item-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.genre-image {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    margin: 2rem 0;
+    object-fit: cover;
+}
+
+        .transition-graphic {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 2rem;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+.rotate {
+    animation: rotate 4s linear infinite;
+}
+
+.bounce {
+    animation: bounce 2s infinite;
+}
+
+/* Navigation styles */
+.navigation-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.2), transparent);
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+    max-width: 600px;
+}
+
+.nav-button, .menu-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    padding: 0.5rem 2rem;
+    color: white;
+    border-radius: 2rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.menu-button {
+    background: rgba(255, 255, 255, 0.3);
+    margin-top: 0.5rem;
+}
+
+.nav-button:hover, .menu-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.transition-text {
+    font-size: 2.5rem;
+    font-weight: 900;
+    opacity: 0;
+    animation: fadeInOut 2s ease-in-out infinite;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(20px); }
+    50% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-20px); }
+}
