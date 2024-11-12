@@ -18,9 +18,9 @@
         <!--</div>-->
         
     </div>
-    
+
     <br>
-    
+
     <div class="container">
         <!-- buttons row -->
         <div class="row">
@@ -31,23 +31,65 @@
                 <button onclick="window.location.href='{% url 'friend_request' %}'" class="btn btn-secondary">Create a new Duo Wrap</button>
             </div>
             <div class="col col-lg-1 ms-auto">    
-                <button onclick="window.location.href='{% url 'profile' %}'" class="btn btn-primary">Profile</button>
+                <button onclick="window.location.href='{% url 'user:profile' %}'" class="btn btn-primary">Profile</button>
             </div>
         </div>
         <br>
-        
-        <!-- list row -->
-        <div class="row">
-            <ul class="list-group list-group-flush">
-                
-                <!-- list header -->
-              <li class="list-group-item text-center">
-                  Your Spotify Wraps
-              </li>
-                
-                <!-- list elements (with placeholder content) -->
-              <li class="list-group-item list-group-item-action" onclick="window.location.href='{% url 'wrap_current' %}'">
-                  <div class="row">
+
+        <!-- debug: demonstrates spotify api call is being successfully made-->
+        Display Name (From Your Spotify Account): <span id="displayName"></span>
+
+        <!-- Spotify Data Sections -->
+        <h2>Recently Played Tracks</h2>
+        <ul class="list-group">
+            {% for track in recent_tracks %}
+                <li class="list-group-item">
+                    {{ track.track.name }} by
+                    {% for artist in track.track.artists %}
+                        {{ artist.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </li>
+            {% empty %}
+                <li class="list-group-item">No recently played tracks available.</li>
+            {% endfor %}
+        </ul>
+
+        <pre>{{ recent_tracks|safe }}</pre>
+
+        <h2>Top Tracks</h2>
+        <ul class="list-group">
+            {% for track in top_tracks %}
+                <li class="list-group-item">
+                    {{ track.name }} by
+                    {% for artist in track.artists %}
+                        {{ artist.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </li>
+            {% empty %}
+                <li class="list-group-item">No top tracks available.</li>
+            {% endfor %}
+        </ul>
+
+        <h2>Top Artists</h2>
+        <ul class="list-group">
+            {% for artist in top_artists %}
+                <li class="list-group-item">{{ artist.name }}</li>
+            {% empty %}
+                <li class="list-group-item">No top artists available.</li>
+            {% endfor %}
+        </ul>
+
+        <!-- Your Spotify Wraps Placeholder -->
+        <h2>Your Spotify Wraps</h2>
+        <ul class="list-group list-group-flush">
+            <!-- list header -->
+            <li class="list-group-item text-center">
+                Your Spotify Wraps
+            </li>
+
+            <!-- Wraps with placeholder content -->
+            <li class="list-group-item list-group-item-action" onclick="window.location.href='{% url 'single_wrap' %}'">
+                <div class="row">
                     <div class="col col-4">
                         Wrap 1
                     </div>
@@ -55,7 +97,7 @@
                         date created: 1/11/01
                     </div>
                     <div class="col col-4">
-                        made with: friends name
+                        made with: friend's name
                     </div>
                   </div>
                   
@@ -74,5 +116,19 @@
         </div>
     </div>
 </div>
+
+<!-- javascript -->
+<script src="{% static 'js/script.js' %}"></script>
+
+<script>
+    authenticateSpotify();
+    var profile = fetchProfile("{{ spotify_token.access_token }}");
+    console.log("Access token passed to fetchProfile:", "{{ spotify_token.access_token }}"); // Debug: print token in console
+
+
+</script>
+
+
+
 </body>
 </html>

@@ -18,7 +18,7 @@ def register(request):
 
         if form.is_valid():
             form.save()
-            return redirect('login')
+            return redirect('user:login')
 
     context = {'registerForm':form}
 
@@ -60,13 +60,13 @@ def welcome(request):
 
 def logout(request):
     auth.logout(request)
-    return redirect('welcome')
+    return redirect('user:welcome')
 
 def delete_account(request):
     if request.user.is_authenticated:
         user = request.user
         logout(request)  # Log the user out before deleting their account
         user.delete()  # Delete the user
-        return redirect('main_menu')
+        return redirect('user:main_menu')
     else:
-        return redirect('login')  # Redirect to login if not authenticated
+        return redirect('user:login')  # Redirect to login if not authenticated
