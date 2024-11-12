@@ -24,7 +24,7 @@
         <!-- buttons row -->
         <div class="row">
             <div class="col col-lg-2">
-                <button onclick="window.location.href='{% url 'single_wrap' %}'" class="btn btn-secondary">Create a new Wrap</button>
+                <button onclick="window.location.href='{% url 'wrap_current' %}'" class="btn btn-secondary">Create a new Wrap</button>
             </div>
             <div class="col col-lg-2">    
                 <button onclick="window.location.href='{% url 'friend_request' %}'" class="btn btn-secondary">Create a new Duo Wrap</button>
@@ -45,7 +45,7 @@
               </li>
                 
                 <!-- list elements (with placeholder content) -->
-              <li class="list-group-item list-group-item-action" onclick="window.location.href='{% url 'single_wrap' %}'">
+              <li class="list-group-item list-group-item-action" onclick="window.location.href='{% url 'wrap_current' %}'">
                   <div class="row">
                     <div class="col col-4">
                         Wrap 1

@@ -1,0 +1,87 @@
+/* Extend styles from single_wrap.css */
+@import "single_wrap.css";
+
+.comparison-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.comparison-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+}
+
+.comparison-item h3 {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
+}
+
+.top-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    width: 100%;
+}
+
+.top-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 1rem;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.top-item:hover {
+    transform: scale(1.02);
+}
+
+.item-rank {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-right: 1rem;
+    min-width: 40px;
+}
+
+.item-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 5px;
+    margin-right: 1rem;
+    object-fit: cover;
+}
+
+.item-details {
+    flex-grow: 1;
+    text-align: left;
+}
+
+.item-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.genre-image {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    margin: 2rem 0;
+    object-fit: cover;
+}
+
+.menu-button {
+    background: rgba(255, 255, 255, 0.3);
+    margin-top: 0.5rem;
+}
+
+.menu-button:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+}

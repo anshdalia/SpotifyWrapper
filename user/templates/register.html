@@ -1,19 +1,75 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Register</title>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="stylesheet" href="{% static 'custom/custom.css' %}">
 </head>
 <body>
-<h1>Register Here</h1>
-<form method="POST" autocomplete="off">
 
-  {% csrf_token %}
+<div class="container mt-5">
+    <br><br><br><br><br>
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <h1 class="text-center">Register Here</h1>
+                    <form method="post" autocomplete="off">
+                        {% csrf_token %}
 
-  {{registerForm.as_p}}
+                        <!-- First Name Field -->
+                        <div class="form-group mb-3">
+                            <label for="{{ registerForm.first_name.id_for_label }}" class="label d-block">First Name</label>
+                            {{ registerForm.first_name }}
+                        </div>
 
-  <input type="submit" value="Register">
+                        <!-- Last Name Field -->
+                        <div class="form-group mb-3">
+                            <label for="{{ registerForm.last_name.id_for_label }}" class="label d-block">Last Name</label>
+                            {{ registerForm.last_name }}
+                        </div>
 
-</form>
+                        <!-- Username Field -->
+                        <div class="form-group mb-3">
+                            <label for="{{ registerForm.username.id_for_label }}" class="label d-block">Username</label>
+                            {{ registerForm.username }}
+                        </div>
+
+                        <!-- Email Field -->
+                        <div class="form-group mb-3">
+                            <label for="{{ registerForm.email.id_for_label }}" class="label d-block">Email</label>
+                            {{ registerForm.email }}
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="form-group mb-3">
+                            <label for="{{ registerForm.password1.id_for_label }}" class="label d-block">Password</label>
+                            {{ registerForm.password1 }}
+                        </div>
+
+                        <!-- Confirm Password Field -->
+                        <div class="form-group mb-3">
+                            <label for="{{ registerForm.password2.id_for_label }}" class="label d-block">Confirm Password</label>
+                            {{ registerForm.password2 }}
+                        </div>
+
+                        <!-- Register Button -->
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary">Register</button>
+                        </div>
+                    </form>
+
+                    <!-- Login Button -->
+                    <div class="d-grid gap-2 mt-3">
+                        <a href="{% url 'login' %}" class="btn btn-secondary">Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
