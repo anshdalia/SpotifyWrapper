@@ -16,20 +16,21 @@ from .util import *
 #Creates URL for Spotify Authorization
 class AuthURL(APIView):
     def get(self, request, format=None):
-        scopes = 'user-read-private user-top-read user-read-playback-state user-read-currently-playing' # TODO change scopes to what we need
+        scopes = 'user-read-private user-top-read user-read-playback-state user-read-currently-playing'
         print("AuthURL is initialized")
         url = Request('GET', 'https://accounts.spotify.com/authorize', params={
-            'scope':scopes,
+            'scope': scopes,
             'response_type': 'code',
             'redirect_uri': REDIRECT_URI,
             'client_id': SPOTIFY_CLIENT_ID,
         }).prepare().url
 
-        return Response({'url':url}, status=status.HTTP_200_OK)
+        return Response({'url': url}, status=status.HTTP_200_OK)
 
+@login_required(login_url='user:login')
 def spotify_callback(request, format=None):
-    code=request.GET.get('code')
-    error=request.GET.get('error') # Use this variable to see error message
+    code = request.GET.get('code')
+    error = request.GET.get('error')
     response = post('https://accounts.spotify.com/api/token', data={
         'grant_type': 'authorization_code',
         'code': code,
@@ -39,8 +40,7 @@ def spotify_callback(request, format=None):
     },
     headers={
         'Content-Type': 'application/x-www-form-urlencoded'
-    }
-                    ).json()
+    }).json()
 
     access_token = response.get('access_token')
     token_type = response.get('token_type')
@@ -48,8 +48,16 @@ def spotify_callback(request, format=None):
     expires_in = response.get('expires_in')
     error = response.get('error')
 
+    # Check if there’s an error
+    if error:
+        return JsonResponse({'error': error}, status=status.HTTP_400_BAD_REQUEST)
 
+    # If no error, update or create user tokens
     update_or_create_user_tokens(request.user, access_token, token_type, expires_in, refresh_token)
+
+    token = get_user_tokens(request.user)
+    print(f"Token after update/create for user {request.user}: {token.access_token}")
+
 
     return redirect('main_menu')
 
@@ -68,6 +76,9 @@ class IsAuthenticated(APIView):
 def main_menu(request):
     user = request.user
     spotify_token = get_user_tokens(user)
+
+    # Debug statement to verify token retrieval
+    print(f"Access token in main_menu for user {user}: {spotify_token.access_token if spotify_token else 'No token'}")
 
     context = {
         'user': user,

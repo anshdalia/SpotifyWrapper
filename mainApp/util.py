@@ -9,8 +9,10 @@ from datetime import timedelta
 def get_user_tokens(user):
     user_tokens = SpotifyToken.objects.filter(user=user)
     if user_tokens.exists():
+        print(f"Retrieved token for user {user}: {user_tokens[0].access_token}")
         return user_tokens[0]
     else:
+        print(f"No token found for user {user}")
         return None
 
 # Updates a Spotify_Token object with new fields or creates a new one if it does not already exist
@@ -35,28 +37,38 @@ def is_spotify_authenticated(request):
     if token:
         expiry = token.expires_in
         if expiry <= timezone.now():
+            print("Token expired; attempting to refresh...")
             refresh_spotify_token(token)
+            # Retrieve the updated token to confirm it refreshed
+            token = get_user_tokens(request.user)
 
-        return True
+        # Check again if token is still valid after attempting refresh
+        if token.expires_in > timezone.now():
+            return True
 
+    print("User not authenticated with Spotify or token expired.")
     return False
 
 # Makes a call to Spotify API to get a new, valid access_token and updates the Spotify_Token
 def refresh_spotify_token(token):
     refresh_token = token.refresh_token
-
+    
     response = post('https://accounts.spotify.com/api/token', data={
         'grant_type': 'refresh_token',
         'refresh_token': refresh_token,
         'client_id': SPOTIFY_CLIENT_ID,
         'client_secret': SPOTIFY_CLIENT_SECRET,
     }).json()
-
+    
     access_token = response.get('access_token')
     token_type = response.get('token_type')
     expires_in = response.get('expires_in')
-    if response.get('refresh_token') is not None:
-        refresh_token = response.get('refresh_token')
-
-    update_or_create_user_tokens(token.user, access_token, token_type, expires_in, refresh_token)
-
+    
+    if access_token:
+        print(f"New access token: {access_token}")
+        if response.get('refresh_token') is not None:
+            refresh_token = response.get('refresh_token')
+        
+        update_or_create_user_tokens(token.user, access_token, token_type, expires_in, refresh_token)
+    else:
+        print("Failed to refresh token:", response)
