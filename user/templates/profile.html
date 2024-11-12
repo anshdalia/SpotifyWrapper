@@ -1,12 +1,19 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Profile</title>
+    <link rel="stylesheet" href="{% static 'custom/custom.css' %}">
 </head>
 <body>
     <h1>Welcome to your Profile, {{ user.username }}!</h1>
-    <button onclick="window.location.href='{% url 'logout' %}'">Logout</button>
-    <button onclick="window.location.href='{% url 'main_menu' %}'">Back to Main Menu</button>
+    <p>Firstname: {{user.first_name}}</p>
+    <p>Lastname: {{user.last_name}}</p>
+    <p>Email: {{ user.email }}</p>
+    <button onclick="window.location.href='{% url 'logout' %}'" class="btn btn-primary">Logout</button>
+    <button onclick="window.location.href='{% url 'main_menu' %}'" class = "btn btn-secondary">Back to Main Menu</button>
+    <button onclick="window.location.href='{% url 'delete_account' %}'" class="btn btn-primary">Delete Account</button>
+
 </body>
 </html>
