@@ -1,12 +1,23 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="{% static 'custom/custom.css' %}">
+    <script src='{% static 'node_modules/bootstrap/dist/js/bootstrap.bundle.min.js' %}'></script>
 </head>
 <body>
     <h1> Ask a friend to make the duo wrap with you</h1>
-    <button onclick="window.location.href='{% url 'duo_wrap' %}'">Send Friend Request</button>
-    <button onclick="window.location.href='{% url 'main_menu' %}'">Back to Main Menu</button>
+    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+  A simple primary alert with 
+        <button onclick="window.location.href='{% url 'duo_wrap' %}'" class="btn btn-sm btn-secondary">Accept</button>
+        <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="alert"> Deny</button>. Give it a click if you like.
+</div>
+    
+    
+    
+    <button onclick="window.location.href='{% url 'duo_wrap' %}'" class="btn btn-primary">Send Friend Request</button>
+    <button onclick="window.location.href='{% url 'main_menu' %}'" class="btn btn-secondary">Back to Main Menu</button>
 </body>
 </html>
