@@ -1,7 +1,9 @@
 from django.contrib import admin
+from .models import Wrap, SpotifyToken, TopArtist, TopSong, DuoWrap
 
-# Register your models here.
-from .models import SpotifyToken
-
-# Register the SpotifyToken model to make it accessible in Django admin
+# Register the models so they appear in the Django Admin
+admin.site.register(Wrap)
 admin.site.register(SpotifyToken)
+admin.site.register(TopArtist)
+admin.site.register(TopSong)
+admin.site.register(DuoWrap)
