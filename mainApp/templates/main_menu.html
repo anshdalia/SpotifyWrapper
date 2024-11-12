@@ -52,6 +52,8 @@
             {% endfor %}
         </ul>
 
+        <pre>{{ recent_tracks|safe }}</pre>
+
         <h2>Top Tracks</h2>
         <ul class="list-group">
             {% for track in top_tracks %}
@@ -114,6 +116,8 @@
     
    
 </script>
+
+
 
 </body>
 </html>
