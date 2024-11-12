@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main Menu</title>
     <link rel="stylesheet" href="{% static 'custom/custom.css' %}">
-    
 </head>
 <body>
 <div class="container-fluid">
@@ -17,7 +16,7 @@
             <br><br><br>header placeholder<br><br>
         </div>
     </div>
-    
+
     <br>
 
     <div class="container">
@@ -38,18 +37,55 @@
         <!-- debug: demonstrates spotify api call is being successfully made-->
         Display Name (From Your Spotify Account): <span id="displayName"></span>
 
-        <!-- list row -->
-        <div class="row">
-            <ul class="list-group list-group-flush">
-                
-                <!-- list header -->
-              <li class="list-group-item text-center">
-                  Your Spotify Wraps
-              </li>
-                
-                <!-- list elements (with placeholder content) -->
-              <li class="list-group-item list-group-item-action" onclick="window.location.href='{% url 'single_wrap' %}'">
-                  <div class="row">
+        <!-- Spotify Data Sections -->
+        <h2>Recently Played Tracks</h2>
+        <ul class="list-group">
+            {% for track in recent_tracks %}
+                <li class="list-group-item">
+                    {{ track.track.name }} by 
+                    {% for artist in track.track.artists %}
+                        {{ artist.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </li>
+            {% empty %}
+                <li class="list-group-item">No recently played tracks available.</li>
+            {% endfor %}
+        </ul>
+
+        <h2>Top Tracks</h2>
+        <ul class="list-group">
+            {% for track in top_tracks %}
+                <li class="list-group-item">
+                    {{ track.name }} by 
+                    {% for artist in track.artists %}
+                        {{ artist.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </li>
+            {% empty %}
+                <li class="list-group-item">No top tracks available.</li>
+            {% endfor %}
+        </ul>
+
+        <h2>Top Artists</h2>
+        <ul class="list-group">
+            {% for artist in top_artists %}
+                <li class="list-group-item">{{ artist.name }}</li>
+            {% empty %}
+                <li class="list-group-item">No top artists available.</li>
+            {% endfor %}
+        </ul>
+
+        <!-- Your Spotify Wraps Placeholder -->
+        <h2>Your Spotify Wraps</h2>
+        <ul class="list-group list-group-flush">
+            <!-- list header -->
+            <li class="list-group-item text-center">
+                Your Spotify Wraps
+            </li>
+
+            <!-- Wraps with placeholder content -->
+            <li class="list-group-item list-group-item-action" onclick="window.location.href='{% url 'single_wrap' %}'">
+                <div class="row">
                     <div class="col col-4">
                         Wrap 1
                     </div>
@@ -57,23 +93,14 @@
                         date created: 1/11/01
                     </div>
                     <div class="col col-4">
-                        made with: friends name
+                        made with: friend's name
                     </div>
-                  </div>
-                  
-              </li>
-              <li class="list-group-item list-group-item-action">
-                  Wrap 2
-              </li>
-              <li class="list-group-item list-group-item-action">
-                  Wrap 3
-              </li>
-              <li class="list-group-item list-group-item-action">
-                  Wrap 4
-              </li>
-            </ul>
-            
-        </div>
+                </div>
+            </li>
+            <li class="list-group-item list-group-item-action">Wrap 2</li>
+            <li class="list-group-item list-group-item-action">Wrap 3</li>
+            <li class="list-group-item list-group-item-action">Wrap 4</li>
+        </ul>
     </div>
 </div>
 
