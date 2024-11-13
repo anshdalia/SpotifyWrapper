@@ -2,14 +2,19 @@ body {
     margin: 0;
     padding: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    overflow: hidden;
+    /* Removed overflow: hidden to allow scrolling */
+}
+
+.scroll-container {
+    max-height: 100vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
 .carousel-container {
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh; /* Changed from height to min-height */
     position: relative;
-    overflow: hidden;
 }
 
 .carousel-slide {
@@ -79,37 +84,45 @@ body {
 .top-list {
     list-style: none;
     padding: 0;
-    margin: 2rem 0;
+    margin: 1rem 0;
     width: 100%;
 }
 
 .top-item {
     display: flex;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     background: rgba(255, 255, 255, 0.1);
-    padding: 1rem;
-    border-radius: 10px;
-    transition: transform 0.3s ease;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+
 .top-item:hover {
-    transform: scale(1.02);
+    transform: scale(1.05); /* Slightly increase size */
+    background: rgba(255, 255, 255, 0.2); /* Slightly lighter background */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Add shadow effect */
 }
 
 .item-rank {
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: 900;
-    margin-right: 1rem;
-    min-width: 40px;
+    margin-right: 0.5rem;
+    min-width: 30px;
 }
 
 .item-image {
-    width: 60px;
-    height: 60px;
-    border-radius: 5px;
-    margin-right: 1rem;
+    width: 50px;
+    height: 50px;
+    border-radius: 4px;
+    margin-right: 0.5rem;
     object-fit: cover;
+    transition: transform 0.3s ease; /* Smooth image scaling */
+}
+
+.item-image:hover {
+    transform: scale(1.1); /* Slightly zoom in the image on hover */
 }
 
 .item-details {
@@ -118,7 +131,7 @@ body {
 }
 
 .item-name {
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: 700;
     margin: 0;
 }
@@ -131,7 +144,7 @@ body {
     object-fit: cover;
 }
 
-        .transition-graphic {
+.transition-graphic {
     width: 200px;
     height: 200px;
     margin-bottom: 2rem;

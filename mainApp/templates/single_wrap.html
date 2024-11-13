@@ -10,133 +10,137 @@
     <link href="{% static 'custom/single_wrap.css' %}" rel="stylesheet">
 </head>
 <body>
-    <div class="carousel-container">
-        <!-- Welcome Slide -->
-        <div class="carousel-slide welcome-slide active">
-            <div class="slide-content">
-                <div class="title animate__animated animate__fadeInUp">Your {{ wrap.year }} Wrapped</div>
-                <div class="subtitle animate__animated animate__fadeInUp">Let's see what you've been up to</div>
-                <div class="highlight animate__animated animate__zoomIn">Ready?</div>
+    <!-- Added scroll-container wrapper to enable scrolling -->
+    <div class="scroll-container">
+        <div class="carousel-container">
+            <!-- Welcome Slide -->
+            <div class="carousel-slide welcome-slide active">
+                <div class="slide-content">
+                    <div class="title animate__animated animate__fadeInUp">Your {{ wrap.year }} Wrapped</div>
+                    <div class="subtitle animate__animated animate__fadeInUp">Let's see what you've been up to</div>
+                    <div class="highlight animate__animated animate__zoomIn">Ready?</div>
+                </div>
+            </div>
+
+            <!-- Artists Transition Slide -->
+            <div class="carousel-slide transition-artists">
+                <div class="slide-content">
+                    <svg class="transition-graphic pulse" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="45" stroke="white" stroke-width="2" fill="none"/>
+                        <path d="M50 25 L50 75 M25 50 L75 50" stroke="white" stroke-width="2" fill="none"/>
+                        <circle cx="50" cy="35" r="15" fill="white"/>
+                        <rect x="35" y="50" width="30" height="20" fill="white"/>
+                    </svg>
+                    <div class="transition-text">Discovering Your Artists...</div>
+                </div>
+            </div>
+
+            <!-- Top Artists Slide -->
+            <div class="carousel-slide artists-slide">
+                <div class="slide-content">
+                    <div class="title">Your Top Artists</div>
+                    <ul class="top-list">
+                        {% for artist in top_artists %}
+                        <li class="top-item animate__animated animate__fadeInLeft" {% if forloop.counter0 > 0 %}style="animation-delay: {{ forloop.counter0|multiply:0.2 }}s;"{% endif %}>
+                            <span class="item-rank">{{ artist.rank }}</span>
+                            <img class="item-image" src="{{ artist.image_url|default:'/api/placeholder/60/60' }}" alt="{{ artist.name }}">
+                            <div class="item-details">
+                                <p class="item-name">{{ artist.name }}</p>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Transition Songs Slide -->
+            <div class="carousel-slide transition-songs">
+                <div class="slide-content">
+                    <svg class="transition-graphic rotate" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="45" stroke="white" stroke-width="2" fill="none"/>
+                        <path d="M50 20 L50 60 M45 60 A5 5 0 0 0 55 60" stroke="white" stroke-width="4" fill="none"/>
+                        <circle cx="35" cy="65" r="10" fill="white"/>
+                        <circle cx="65" cy="65" r="10" fill="white"/>
+                    </svg>
+                    <div class="transition-text">Loading Your Top Tracks...</div>
+                </div>
+            </div>
+
+            <!-- Top Songs Slide -->
+            <div class="carousel-slide songs-slide">
+                <div class="slide-content">
+                    <div class="title">Your Top Songs</div>
+                    <ul class="top-list">
+                        {% for song in top_songs %}
+                        <li class="top-item animate__animated animate__fadeInRight" {% if forloop.counter0 > 0 %}style="animation-delay: {{ forloop.counter0|multiply:0.2 }}s;"{% endif %}>
+                            <span class="item-rank">{{ song.rank }}</span>
+                            <img class="item-image" src="{{ song.image_url|default:'/api/placeholder/60/60' }}" alt="{{ song.title }}">
+                            <div class="item-details">
+                                <p class="item-name">{{ song.title }}</p>
+                                <small>{{ song.artist }}</small>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Transition Genre Slide -->
+            <div class="carousel-slide transition-genre">
+                <div class="slide-content">
+                    <svg class="transition-graphic bounce" viewBox="0 0 100 100">
+                        <rect x="20" y="20" width="20" height="60" fill="white"/>
+                        <rect x="45" y="30" width="20" height="50" fill="white"/>
+                        <rect x="70" y="40" width="20" height="40" fill="white"/>
+                    </svg>
+                    <div class="transition-text">Analyzing Your Taste...</div>
+                </div>
+            </div>
+
+            <!-- Top Genre Slide -->
+            <div class="carousel-slide genre-slide">
+                <div class="slide-content">
+                    <div class="title">Your Top Genre</div>
+                    <img class="genre-image animate__animated animate__zoomIn" src="/api/placeholder/200/200" alt="{{ wrap.top_genre }}">
+                    <div class="highlight animate__animated animate__fadeInUp">{{ wrap.top_genre }}</div>
+                    <div class="subtitle animate__animated animate__fadeInUp">You've got great taste in music!</div>
+                </div>
+            </div>
+
+            <!-- Minutes Transition Slide -->
+            <div class="carousel-slide transition-minutes">
+                <div class="slide-content">
+                    <svg class="transition-graphic pulse" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="45" stroke="white" stroke-width="2" fill="none"/>
+                        <path d="M50 50 L50 20" stroke="white" stroke-width="4" fill="none"/>
+                        <path d="M50 50 L70 50" stroke="white" stroke-width="4" fill="none"/>
+                        <circle cx="50" cy="50" r="5" fill="white"/>
+                    </svg>
+                    <div class="transition-text">Counting Every Minute...</div>
+                </div>
+            </div>
+
+            <!-- Minutes Listened Slide -->
+            <div class="carousel-slide minutes-slide">
+                <div class="slide-content">
+                    <div class="title">Minutes Listened</div>
+                    <div class="highlight animate__animated animate__zoomIn">{{ wrap.minutes_listened }}</div>
+                    <div class="subtitle">That's like listening to "All Too Well (10 Minute Version)" {{ wrap.minutes_listened|default:0|divisibleby:10 }} times!</div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="navigation-container">
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="previousSlide()">Previous</button>
+                    <button class="nav-button" onclick="nextSlide()">Next</button>
+                </div>
+                <button class="menu-button" onclick="window.location.href='{% url 'main_menu' %}'">Back to Menu</button>
             </div>
         </div>
+    </div> <!-- End of scroll-container -->
 
-        <!-- Keep your existing transition slides as they are -->
-        <!-- Artists Transition Slide -->
-        <div class="carousel-slide transition-artists">
-            <div class="slide-content">
-                <svg class="transition-graphic pulse" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="45" stroke="white" stroke-width="2" fill="none"/>
-                    <path d="M50 25 L50 75 M25 50 L75 50" stroke="white" stroke-width="2" fill="none"/>
-                    <circle cx="50" cy="35" r="15" fill="white"/>
-                    <rect x="35" y="50" width="30" height="20" fill="white"/>
-                </svg>
-                <div class="transition-text">Discovering Your Artists...</div>
-            </div>
-        </div>
-
-        <!-- Top Artists Slide -->
-        <div class="carousel-slide artists-slide">
-            <div class="slide-content">
-                <div class="title">Your Top Artists</div>
-                <ul class="top-list">
-                    {% for artist in top_artists %}
-                    <li class="top-item animate__animated animate__fadeInLeft" {% if forloop.counter0 > 0 %}style="animation-delay: {{ forloop.counter0|multiply:0.2 }}s;"{% endif %}>
-                        <span class="item-rank">{{ artist.rank }}</span>
-                        <img class="item-image" src="{{ artist.image_url|default:'/api/placeholder/60/60' }}" alt="{{ artist.name }}">
-                        <div class="item-details">
-                            <p class="item-name">{{ artist.name }}</p>
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-
-        <!-- Keep your existing transition slides -->
-        <div class="carousel-slide transition-songs">
-            <div class="slide-content">
-                <svg class="transition-graphic rotate" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="45" stroke="white" stroke-width="2" fill="none"/>
-                    <path d="M50 20 L50 60 M45 60 A5 5 0 0 0 55 60" stroke="white" stroke-width="4" fill="none"/>
-                    <circle cx="35" cy="65" r="10" fill="white"/>
-                    <circle cx="65" cy="65" r="10" fill="white"/>
-                </svg>
-                <div class="transition-text">Loading Your Top Tracks...</div>
-            </div>
-        </div>
-
-        <!-- Top Songs Slide -->
-        <div class="carousel-slide songs-slide">
-            <div class="slide-content">
-                <div class="title">Your Top Songs</div>
-                <ul class="top-list">
-                    {% for song in top_songs %}
-                    <li class="top-item animate__animated animate__fadeInRight" {% if forloop.counter0 > 0 %}style="animation-delay: {{ forloop.counter0|multiply:0.2 }}s;"{% endif %}>
-                        <span class="item-rank">{{ song.rank }}</span>
-                        <img class="item-image" src="{{ song.image_url|default:'/api/placeholder/60/60' }}" alt="{{ song.title }}">
-                        <div class="item-details">
-                            <p class="item-name">{{ song.title }}</p>
-                            <small>{{ song.artist }}</small>
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-
-        <div class="carousel-slide transition-genre">
-            <div class="slide-content">
-                <svg class="transition-graphic bounce" viewBox="0 0 100 100">
-                    <rect x="20" y="20" width="20" height="60" fill="white"/>
-                    <rect x="45" y="30" width="20" height="50" fill="white"/>
-                    <rect x="70" y="40" width="20" height="40" fill="white"/>
-                </svg>
-                <div class="transition-text">Analyzing Your Taste...</div>
-            </div>
-        </div>
-
-        <!-- Top Genre Slide -->
-        <div class="carousel-slide genre-slide">
-            <div class="slide-content">
-                <div class="title">Your Top Genre</div>
-                <img class="genre-image animate__animated animate__zoomIn" src="/api/placeholder/200/200" alt="{{ wrap.top_genre }}">
-                <div class="highlight animate__animated animate__fadeInUp">{{ wrap.top_genre }}</div>
-                <div class="subtitle animate__animated animate__fadeInUp">You've got great taste in music!</div>
-            </div>
-        </div>
-
-        <!-- Minutes Transition Slide -->
-        <div class="carousel-slide transition-minutes">
-            <div class="slide-content">
-                <svg class="transition-graphic pulse" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="45" stroke="white" stroke-width="2" fill="none"/>
-                    <path d="M50 50 L50 20" stroke="white" stroke-width="4" fill="none"/>
-                    <path d="M50 50 L70 50" stroke="white" stroke-width="4" fill="none"/>
-                    <circle cx="50" cy="50" r="5" fill="white"/>
-                </svg>
-                <div class="transition-text">Counting Every Minute...</div>
-            </div>
-        </div>
-
-        <!-- Minutes Listened Slide -->
-        <div class="carousel-slide minutes-slide">
-            <div class="slide-content">
-                <div class="title">Minutes Listened</div>
-                <div class="highlight animate__animated animate__zoomIn">{{ wrap.minutes_listened }}</div>
-                <div class="subtitle">That's like listening to "All Too Well (10 Minute Version)" {{ wrap.minutes_listened|default:0|divisibleby:10 }} times!</div>            </div>
-        </div>
-
-        <!-- Navigation -->
-        <div class="navigation-container">
-            <div class="nav-buttons">
-                <button class="nav-button" onclick="previousSlide()">Previous</button>
-                <button class="nav-button" onclick="nextSlide()">Next</button>
-            </div>
-            <button class="menu-button" onclick="window.location.href='{% url 'main_menu' %}'">Back to Menu</button>
-        </div>
-    </div>
-
-    <!-- Keep your existing JavaScript -->
+    <!-- JavaScript for slide navigation -->
     <script>
         let currentSlide = 0;
         const slides = document.querySelectorAll('.carousel-slide');
