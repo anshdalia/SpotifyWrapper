@@ -7,7 +7,11 @@ from rest_framework import status
 from rest_framework.response import Response
 from requests import Request, post
 
-from .models import Wrap, DuoWrap
+from django.views.decorators.http import require_http_methods
+from django.http import JsonResponse
+from .models import Wrap
+
+from .models import Wrap, DuoWrap, TopArtist, TopSong
 from SpotifyWrapper.settings import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, REDIRECT_URI
 from .util import (
     get_user_tokens, update_or_create_user_tokens, is_spotify_authenticated,
@@ -60,13 +64,19 @@ class IsAuthenticated(APIView):
 def main_menu(request):
     user = request.user
 
+    # Check if authenticated and, if not, redirect to auth URL
     if not is_spotify_authenticated(request):
         return redirect('auth_url')
 
     spotify_token = get_user_tokens(user)
+
+    # Fetch data from Spotify API
     recent_tracks = get_recently_played_tracks(user)
-    top_tracks = get_top_items(user, item_type='tracks', limit = 5)
-    top_artists = get_top_items(user, item_type='artists', limit = 5)
+    top_tracks = get_top_items(user, item_type='tracks')
+    top_artists = get_top_items(user, item_type='artists')
+
+    # Fetch all wraps for the user
+    user_wraps = Wrap.objects.filter(user=user).order_by('-created_at')
 
     context = {
         'user': user,
@@ -74,21 +84,31 @@ def main_menu(request):
         'recent_tracks': recent_tracks,
         'top_tracks': top_tracks,
         'top_artists': top_artists,
+        'user_wraps': user_wraps,  # Pass the wraps to the template
     }
 
     return render(request, 'main_menu.html', context)
 
 @login_required(login_url='user:login')
-def single_wrap_view(request):
+def single_wrap_view(request, wrap_id=None):
     user = request.user
     current_year = timezone.now().year
 
-    # Call create_wrap_for_user if a wrap doesn't exist for the current year
-    if not Wrap.objects.filter(user=user, year=current_year).exists():
-        create_wrap_for_user(user)
+    # If no specific wrap_id is provided, look for or create the current year's wrap
+    if wrap_id is None:
+        # Attempt to get or create the current year's wrap with meaningful data
+        wrap, created = Wrap.objects.get_or_create(user=user, year=current_year, defaults={
+            'minutes_listened': 0,  # Temporary default value
+            'top_genre': 'Unknown'  # Temporary default value
+        })
+        
+        # If it was created with defaults, fetch actual data
+        if created:
+            create_wrap_for_user(user)  # Populate with actual data
 
-    # Retrieve the wrap for display
-    wrap = get_object_or_404(Wrap, user=user, year=current_year)
+    else:
+        wrap = get_object_or_404(Wrap, id=wrap_id, user=user)
+
     top_artists = wrap.top_artists.all()
     top_songs = wrap.top_songs.all()
 
@@ -99,26 +119,25 @@ def single_wrap_view(request):
     }
     return render(request, 'single_wrap.html', context)
 
+
+
+
 @login_required(login_url='user:login')
 def friend_request(request):
     return render(request, 'friend_requesting.html')
 
 @login_required(login_url='user:login')
 def duo_wrap(request):
-    return render(request, 'duo_wrap.html')
+    # Logic to create a new wrap every time this endpoint is hit
+    create_wrap_for_user(request.user)  # create new wrap on each request
+    return redirect('main_menu')
 
 @login_required
-def duo_wrap_view(request, duo_wrap_id):
-    duo_wrap = get_object_or_404(DuoWrap, id=duo_wrap_id)
-    context = {
-        'duo_wrap': duo_wrap,
-        'user1_top_artists': duo_wrap.user1_top_artists,
-        'user2_top_artists': duo_wrap.user2_top_artists,
-        'user1_top_songs': duo_wrap.user1_top_songs,
-        'user2_top_songs': duo_wrap.user2_top_songs,
-        'user1_top_genre': duo_wrap.user1_top_genre,
-        'user2_top_genre': duo_wrap.user2_top_genre,
-        'user1_minutes_listened': duo_wrap.user1_minutes_listened,
-        'user2_minutes_listened': duo_wrap.user2_minutes_listened,
-    }
-    return render(request, 'duo_wrap.html', context)
+@require_http_methods(["DELETE"])
+def delete_wrap(request, wrap_id):
+    try:
+        wrap = Wrap.objects.get(id=wrap_id, user=request.user)
+        wrap.delete()
+        return JsonResponse({'status': 'success'}, status=200)
+    except Wrap.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Wrap not found'}, status=404)

@@ -171,22 +171,33 @@ def get_top_items(user, item_type='tracks', time_range='medium_term', limit=10):
 def create_wrap_for_user(user):
     current_year = timezone.now().year
 
-    if Wrap.objects.filter(user=user, year=current_year).exists():
-        return
+    # Try to get the existing wrap for the year, or create a new one if it doesn’t exist
+    wrap, created = Wrap.objects.get_or_create(user=user, year=current_year)
 
+    # Fetch data
     minutes_listened = fetch_minutes_listened(user)
     top_genre = fetch_top_genre(user)
     top_artists = fetch_top_artists(user)
     top_songs = fetch_top_songs(user)
 
-    wrap = Wrap.objects.create(
-        user=user,
-        year=current_year,
-        minutes_listened=minutes_listened,
-        top_genre=top_genre,
-    )
+    print(f"{'Creating' if created else 'Updating'} wrap for {user} - Year: {current_year}")
+    print(f"Minutes Listened: {minutes_listened}, Top Genre: {top_genre}")
+    print(f"Top Artists: {top_artists}")
+    print(f"Top Songs: {top_songs}")
 
+    # Update wrap data
+    wrap.minutes_listened = minutes_listened
+    wrap.top_genre = top_genre
+    wrap.save()
+
+    # Clear previous TopArtist and TopSong records for this wrap if updating
+    if not created:
+        wrap.top_artists.all().delete()
+        wrap.top_songs.all().delete()
+
+    # Create TopArtist entries
     for rank, artist in enumerate(top_artists, start=1):
+        print(f"Saving artist {artist['name']} at rank {rank}")
         TopArtist.objects.create(
             wrap=wrap,
             name=artist['name'],
@@ -194,7 +205,9 @@ def create_wrap_for_user(user):
             image_url=artist.get('image_url', '')
         )
 
+    # Create TopSong entries
     for rank, song in enumerate(top_songs, start=1):
+        print(f"Saving song {song['title']} by {song['artist']} at rank {rank}")
         TopSong.objects.create(
             wrap=wrap,
             title=song['title'],
