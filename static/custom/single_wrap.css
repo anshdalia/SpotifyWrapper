@@ -98,7 +98,6 @@ body {
     transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-
 .top-item:hover {
     transform: scale(1.05); /* Slightly increase size */
     background: rgba(255, 255, 255, 0.2); /* Slightly lighter background */
@@ -118,7 +117,7 @@ body {
     border-radius: 4px;
     margin-right: 0.5rem;
     object-fit: cover;
-    transition: transform 0.3s ease; /* Smooth image scaling */
+    transition: transform 0.3s ease;
 }
 
 .item-image:hover {
@@ -131,7 +130,7 @@ body {
 }
 
 .item-name {
-    font-size: 1rem;
+    font-size: 1.2rem;
     font-weight: 700;
     margin: 0;
 }
@@ -228,6 +227,49 @@ body {
     opacity: 0;
     animation: fadeInOut 2s ease-in-out infinite;
 }
+
+.share-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.share-container h3 {
+    font-size: 1.2rem;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.share-button {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.share-button:hover {
+    color: #ffd700; /* A golden color for hover effect */
+}
+
+.share-button i {
+    font-size: 1.5rem;
+}
+
+/* Specific colors for each platform */
+.share-button:nth-child(1) { background: #e4405f; } /* Instagram */
+.share-button:nth-child(2) { background: #0077b5; } /* LinkedIn */
+.share-button:nth-child(3) { background: #1da1f2; } /* Twitter */
+
 
 @keyframes fadeInOut {
     0% { opacity: 0; transform: translateY(20px); }

@@ -6,6 +6,8 @@
     <title>Your {{ wrap.year }} Wrapped</title>
     {% load static %}
     {% load wrap_filters %}
+    <!-- Import Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <link href="{% static 'custom/single_wrap.css' %}" rel="stylesheet">
 </head>
@@ -129,6 +131,13 @@
                 </div>
             </div>
 
+            <div class="share-container">
+                <h3>Share Your Wrapped</h3>
+                <button class="share-button" onclick="shareOnInstagram()"><i class="fab fa-instagram"></i> Instagram</button>
+                <button class="share-button" onclick="shareOnLinkedIn()"><i class="fab fa-linkedin"></i> LinkedIn</button>
+                <button class="share-button" onclick="shareOnTwitter()"><i class="fab fa-twitter"></i> X (Twitter)</button>
+            </div>
+
             <!-- Navigation -->
             <div class="navigation-container">
                 <div class="nav-buttons">
@@ -167,6 +176,25 @@
             if (e.key === 'ArrowRight') nextSlide();
             if (e.key === 'ArrowLeft') previousSlide();
         });
+
+        // Social Media Sharing Functions
+        function shareOnInstagram() {
+            // Instagram doesn’t have direct share link functionality, so we can only open the Instagram page.
+            window.open('https://www.instagram.com/', '_blank');
+        }
+
+        function shareOnLinkedIn() {
+            const url = encodeURIComponent(window.location.href);
+            const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+            window.open(shareUrl, '_blank');
+        }
+
+        function shareOnTwitter() {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent("Check out my Spotify Wrapped!");
+            const shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
+            window.open(shareUrl, '_blank');
+        }
     </script>
 </body>
 </html>
