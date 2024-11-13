@@ -13,10 +13,7 @@ from .models import Wrap
 
 from .models import Wrap, DuoWrap, TopArtist, TopSong
 from SpotifyWrapper.settings import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, REDIRECT_URI
-from .util import (
-    get_user_tokens, update_or_create_user_tokens, is_spotify_authenticated,
-    get_recently_played_tracks, get_top_items, create_wrap_for_user
-)
+from .util import *
 
 
 # Spotify Authorization URL creation function
@@ -55,7 +52,7 @@ def spotify_callback(request, format=None):
 
 class IsAuthenticated(APIView):
     def get(self, request, format=None):
-        if request.user.is_authenticated:
+        if request.user.is_authenticated: #Checks if user is logged in
             is_authenticated = is_spotify_authenticated(request)
             return JsonResponse({'status': is_authenticated}, status=status.HTTP_200_OK)
         return Response({'status': False, 'message': 'User not logged in'}, status=status.HTTP_401_UNAUTHORIZED)
