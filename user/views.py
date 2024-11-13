@@ -67,6 +67,6 @@ def delete_account(request):
         user = request.user
         logout(request)  # Log the user out before deleting their account
         user.delete()  # Delete the user
-        return redirect('user:main_menu')
+        return redirect('main_menu')
     else:
         return redirect('user:login')  # Redirect to login if not authenticated
