@@ -5,6 +5,15 @@ from django.utils import timezone
 from datetime import timedelta
 
 def get_user_tokens(user):
+    """
+    Retrieves the Spotify token for a given user.
+
+    Args:
+        user (User): The user whose token is to be retrieved.
+
+    Returns:
+        SpotifyToken: The Spotify token associated with the user, or None if no token is found.
+    """
     user_tokens = SpotifyToken.objects.filter(user=user)
     if user_tokens.exists():
         print(f"Retrieved token for user {user}: {user_tokens[0].access_token}")
@@ -13,6 +22,16 @@ def get_user_tokens(user):
     return None
 
 def update_or_create_user_tokens(user, access_token, token_type, expires_in, refresh_token):
+    """
+    Updates or creates a Spotify token for the given user.
+
+    Args:
+        user (User): The user for whom the token is created or updated.
+        access_token (str): The access token.
+        token_type (str): The type of token.
+        expires_in (int): Token expiry time in seconds.
+        refresh_token (str): The refresh token.
+    """
     tokens = get_user_tokens(user)
     expires_in = timezone.now() + timedelta(seconds=expires_in)
     print("update_or_create_user_tokens is called:")
@@ -29,6 +48,15 @@ def update_or_create_user_tokens(user, access_token, token_type, expires_in, ref
         tokens.save()
 
 def is_spotify_authenticated(request):
+    """
+    Checks if the Spotify token for the user associated with the request is valid.
+
+    Args:
+        request (HttpRequest): The HTTP request containing the user to be authenticated.
+
+    Returns:
+        bool: True if the user has a valid Spotify token, False otherwise.
+    """
     token = get_user_tokens(request.user)
     if token:
         expiry = token.expires_in
@@ -44,6 +72,12 @@ def is_spotify_authenticated(request):
     return False
 
 def refresh_spotify_token(token):
+    """
+    Refreshes the Spotify access token using the refresh token.
+
+    Args:
+        token (SpotifyToken): The Spotify token to be refreshed.
+    """
     refresh_token = token.refresh_token
     response = requests.post('https://accounts.spotify.com/api/token', data={
         'grant_type': 'refresh_token',
@@ -62,6 +96,17 @@ def refresh_spotify_token(token):
         print("Failed to refresh token:", response)
 
 def make_spotify_request(user, endpoint, params=None):
+    """
+    Makes a request to the Spotify API on behalf of a user.
+
+    Args:
+        user (User): The user for whom the request is being made.
+        endpoint (str): The Spotify API endpoint.
+        params (dict, optional): Query parameters for the request.
+
+    Returns:
+        dict or None: The JSON response from the API, or None if the request failed.
+    """
     token = get_user_tokens(user)
     headers = {
         "Authorization": f"Bearer {token.access_token}"
@@ -82,6 +127,15 @@ def make_spotify_request(user, endpoint, params=None):
         return None
 
 def get_recently_played_tracks(user):
+    """
+    Retrieves the user's recently played tracks from Spotify.
+
+    Args:
+        user (User): The user whose recently played tracks are retrieved.
+
+    Returns:
+        list: A list of recently played tracks, each containing track details.
+    """
     token = get_user_tokens(user)
     if not token:
         print("No token available for user.")
@@ -110,6 +164,16 @@ def get_recently_played_tracks(user):
 
 
 def fetch_minutes_listened(user):
+    """
+    Calculates the total minutes listened by the user from their recently played tracks.
+
+    Args:
+        user (User): The user for whom the minutes listened are calculated.
+
+    Returns:
+        int: The total minutes listened.
+    """
+
     data = make_spotify_request(user, "/me/player/recently-played", params={"limit": 50})
 
     if not data:
@@ -120,6 +184,15 @@ def fetch_minutes_listened(user):
     return int(total_minutes)
 
 def fetch_top_genre(user):
+    """
+    Retrieves the top genre for the user based on their top artists.
+
+    Args:
+        user (User): The user whose top genre is fetched.
+
+    Returns:
+        str: The most frequent genre among the user's top artists.
+    """
     data = make_spotify_request(user, "/me/top/artists", params={"time_range": "medium_term", "limit": 50})
 
     if not data:
@@ -134,6 +207,15 @@ def fetch_top_genre(user):
     return top_genre
 
 def fetch_top_artists(user):
+    """
+    Retrieves the user's top artists.
+
+    Args:
+        user (User): The user whose top artists are retrieved.
+
+    Returns:
+        list: A list of top artists with their name and image URL.
+    """
     data = make_spotify_request(user, "/me/top/artists", params={"time_range": "medium_term", "limit": 10})
 
     if not data:
@@ -149,6 +231,15 @@ def fetch_top_artists(user):
     return top_artists
 
 def fetch_top_songs(user):
+    """
+    Retrieves the user's top songs.
+
+    Args:
+        user (User): The user whose top songs are retrieved.
+
+    Returns:
+        list: A list of top songs with their title, artist, and image URL.
+    """
     data = make_spotify_request(user, "/me/top/tracks", params={"time_range": "medium_term", "limit": 10})
 
     if not data:
@@ -165,12 +256,33 @@ def fetch_top_songs(user):
     return top_songs
 
 def get_top_items(user, item_type='tracks', time_range='medium_term', limit=10):
+    """
+    Retrieves the user's top items (tracks or artists) based on a specified time range and limit.
+
+    Args:
+        user (User): The user whose top items are fetched.
+        item_type (str): Type of items to retrieve ('tracks' or 'artists').
+        time_range (str): Time range for the data ('short_term', 'medium_term', 'long_term').
+        limit (int): Number of items to fetch.
+
+    Returns:
+        list: A list of top items, or an empty list if the request fails.
+    """
     endpoint = f"/me/top/{item_type}"
     params = {"time_range": time_range, "limit": limit}
     data = make_spotify_request(user, endpoint, params)
     return data.get("items", []) if data else []
 
 def create_wrap_for_user(user):
+    """
+    Creates or updates a user's yearly wrap with their Spotify data.
+
+    Args:
+        user (User): The user for whom the wrap is created or updated.
+
+    Returns:
+        Wrap: The user's wrap instance containing music statistics.
+    """
     current_year = timezone.now().year
 
     # Try to get the existing wrap for the year, or create a new one if it doesn’t exist

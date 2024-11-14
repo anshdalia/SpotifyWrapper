@@ -4,7 +4,16 @@ from django.contrib.auth.models import User
 
 
 class Wrap(models.Model):
-    """Main wrap model to store user's yearly music statistics"""
+    """
+    Main wrap model to store a user's yearly music statistics.
+    
+    Attributes:
+        user (ForeignKey): Reference to the user associated with the wrap.
+        year (IntegerField): The year of the wrap.
+        minutes_listened (IntegerField): Total minutes the user listened in the wrap year.
+        top_genre (CharField): User's top genre for the year.
+        created_at (DateTimeField): Timestamp for when the wrap was created.
+    """
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='wraps')
     year = models.IntegerField()
     minutes_listened = models.IntegerField()
@@ -20,6 +29,17 @@ class Wrap(models.Model):
 
 
 class SpotifyToken(models.Model):
+    """
+    Model to store Spotify API tokens for a user.
+    
+    Attributes:
+        user (OneToOneField): Reference to the user associated with the token.
+        created_at (DateTimeField): Timestamp for when the token was created.
+        refresh_token (CharField): Token used to refresh the access token.
+        access_token (CharField): Token used to access Spotify API on behalf of the user.
+        expires_in (DateTimeField): Expiration date and time of the access token.
+        token_type (CharField): Type of token (e.g., Bearer).
+    """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     refresh_token = models.CharField(max_length=150)
@@ -28,7 +48,15 @@ class SpotifyToken(models.Model):
     token_type = models.CharField(max_length=50)
 
 class TopArtist(models.Model):
-    """Store top artists for each wrap"""
+    """
+    Model to store the top artists for each wrap.
+    
+    Attributes:
+        wrap (ForeignKey): Reference to the associated wrap.
+        name (CharField): Name of the artist.
+        rank (PositiveIntegerField): Ranking of the artist.
+        image_url (URLField): URL to an image of the artist.
+    """
     wrap = models.ForeignKey(Wrap, on_delete=models.CASCADE, related_name='top_artists')
     name = models.CharField(max_length=200)
     rank = models.PositiveIntegerField()
@@ -43,7 +71,16 @@ class TopArtist(models.Model):
 
 
 class TopSong(models.Model):
-    """Store top songs for each wrap"""
+    """"
+    Model to store the top songs for each wrap.
+    
+    Attributes:
+        wrap (ForeignKey): Reference to the associated wrap.
+        title (CharField): Title of the song.
+        artist (CharField): Name of the song's artist.
+        rank (PositiveIntegerField): Ranking of the song.
+        image_url (URLField): URL to an image of the song cover.
+    """
     wrap = models.ForeignKey(Wrap, on_delete=models.CASCADE, related_name='top_songs')
     title = models.CharField(max_length=200)
     artist = models.CharField(max_length=200)
@@ -58,6 +95,20 @@ class TopSong(models.Model):
         return f"{self.title} by {self.artist} (Rank {self.rank})"
 
 class DuoWrap(models.Model):
+    """
+    Model to store a wrap comparison between two users for a specific year.
+    
+    Attributes:
+        user1 (ForeignKey): First user in the comparison.
+        user2 (ForeignKey): Second user in the comparison.
+        year (IntegerField): The year of the duo wrap.
+        top_artists_comparison (TextField): Comparison of top artists between the two users.
+        top_songs_comparison (TextField): Comparison of top songs between the two users.
+        top_genre_comparison (TextField): Comparison of top genres between the two users.
+        minutes_listened_comparison (IntegerField): Comparison of total minutes listened between the two users.
+        created_at (DateTimeField): Timestamp for when the duo wrap was created.
+        updated_at (DateTimeField): Timestamp for when the duo wrap was last updated.
+    """
     user1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user1')
     user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user2')
     year = models.IntegerField()

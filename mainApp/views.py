@@ -18,6 +18,15 @@ from .util import *
 
 # Spotify Authorization URL creation function
 def get_auth_url(request):
+    """
+    Generates the Spotify authorization URL with required scopes and redirects the user to Spotify login.
+
+    Args:
+        request (HttpRequest): The HTTP request.
+
+    Returns:
+        HttpResponseRedirect: Redirects to the Spotify authorization page.
+    """
     scopes = 'user-read-private user-top-read user-read-playback-state user-read-currently-playing user-read-recently-played'
     url = Request('GET', 'https://accounts.spotify.com/authorize', params={
         'scope': scopes,
@@ -29,6 +38,15 @@ def get_auth_url(request):
 
 @login_required(login_url='user:login')
 def spotify_callback(request, format=None):
+    """
+    Handles the Spotify authorization callback, retrieves access and refresh tokens, and saves them.
+
+    Args:
+        request (HttpRequest): The HTTP request with authorization code.
+
+    Returns:
+        HttpResponseRedirect: Redirects to the main menu after successful token retrieval.
+    """
     code = request.GET.get('code')
     response = post('https://accounts.spotify.com/api/token', data={
         'grant_type': 'authorization_code',
@@ -51,7 +69,19 @@ def spotify_callback(request, format=None):
     return redirect('main_menu')
 
 class IsAuthenticated(APIView):
+    """
+    API view to check if the user is authenticated with Spotify.
+    """
     def get(self, request, format=None):
+        """
+        Checks if the user is authenticated and has a valid Spotify token.
+
+        Args:
+            request (HttpRequest): The HTTP request.
+
+        Returns:
+            JsonResponse: JSON response indicating authentication status.
+        """
         if request.user.is_authenticated: #Checks if user is logged in
             is_authenticated = is_spotify_authenticated(request)
             return JsonResponse({'status': is_authenticated}, status=status.HTTP_200_OK)
@@ -59,6 +89,15 @@ class IsAuthenticated(APIView):
 
 @login_required(login_url='user:login')
 def main_menu(request):
+    """
+    Renders the main menu, displaying user's Spotify data including recent tracks, top tracks, and top artists.
+
+    Args:
+        request (HttpRequest): The HTTP request.
+
+    Returns:
+        HttpResponse: Rendered main menu page with user data.
+    """
     user = request.user
 
     # Check if authenticated and, if not, redirect to auth URL
@@ -88,6 +127,16 @@ def main_menu(request):
 
 @login_required(login_url='user:login')
 def single_wrap_view(request, wrap_id=None):
+    """
+    Displays a specific year's wrap for the user, or creates one for the current year if not specified.
+
+    Args:
+        request (HttpRequest): The HTTP request.
+        wrap_id (int, optional): ID of the wrap to be displayed.
+
+    Returns:
+        HttpResponse: Rendered wrap page with top artists and top songs for the year.
+    """
     user = request.user
     current_year = timezone.now().year
 
@@ -121,10 +170,29 @@ def single_wrap_view(request, wrap_id=None):
 
 @login_required(login_url='user:login')
 def friend_request(request):
+    """
+    Renders the friend request page for creating a duo wrap.
+
+    Args:
+        request (HttpRequest): The HTTP request.
+
+    Returns:
+        HttpResponse: Rendered friend request page.
+    """
     return render(request, 'friend_requesting.html')
 
 @login_required(login_url='user:login')
 def duo_wrap(request):
+    """
+    Creates a new wrap for the user and redirects to the main menu.
+
+    Args:
+        request (HttpRequest): The HTTP request.
+
+    Returns:
+        HttpResponseRedirect: Redirects to the main menu.
+    """
+
     # Logic to create a new wrap every time this endpoint is hit
     create_wrap_for_user(request.user)  # create new wrap on each request
     return redirect('main_menu')
@@ -132,6 +200,16 @@ def duo_wrap(request):
 @login_required
 @require_http_methods(["DELETE"])
 def delete_wrap(request, wrap_id):
+    """
+    Deletes a specified wrap for the logged-in user.
+
+    Args:
+        request (HttpRequest): The HTTP request.
+        wrap_id (int): The ID of the wrap to delete.
+
+    Returns:
+        JsonResponse: JSON response indicating success or failure of deletion.
+    """
     try:
         wrap = Wrap.objects.get(id=wrap_id, user=request.user)
         wrap.delete()

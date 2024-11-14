@@ -5,15 +5,23 @@ from mainApp.models import Wrap, TopArtist, TopSong
 
 
 class Command(BaseCommand):
+    """ Django custom management command to create sample Wrapped data for testing purposes."""
+
     help = 'Creates sample Wrapped data for testing'
 
     def handle(self, *args, **options):
+
+        """
+        Main method that executes when the command is run. It creates a test user, sample Wrapped
+        data for the current year, and populates top artists and top songs for testing purposes.
+        """
+
         # Get or create a test user
         user, created = User.objects.get_or_create(
             username='testuser',
             defaults={'email': 'test@example.com'}
         )
-
+        # If the user was created, set a password for the new user
         if created:
             user.set_password('testpass123')
             user.save()
@@ -48,18 +56,19 @@ class Command(BaseCommand):
             {'title': 'Born To Die', 'artist': 'Lana Del Rey', 'rank': 5, 'image_url': '/api/placeholder/60/60'},
         ]
 
-        # Clear existing data
+        # Clear existing data for this wrap to avoid duplicates
         TopArtist.objects.filter(wrap=wrap).delete()
         TopSong.objects.filter(wrap=wrap).delete()
 
-        # Create new artists
+        # Create new TopArtist objects from sample data
         for artist_data in artists:
             TopArtist.objects.create(wrap=wrap, **artist_data)
             self.stdout.write(f'Created artist: {artist_data["name"]}')
 
-        # Create new songs
+        # Create new TopSong objects from sample data
         for song_data in songs:
             TopSong.objects.create(wrap=wrap, **song_data)
             self.stdout.write(f'Created song: {song_data["title"]}')
 
+        #Output a success message after creating sample data
         self.stdout.write(self.style.SUCCESS('Successfully created sample Wrapped data'))

@@ -1,4 +1,8 @@
 var is_authenticated;
+
+/**
+ * Checks if the user is authenticated with Spotify and redirects to the authentication URL if not.
+ */
 function authenticateSpotify() {
     fetch('/is-authenticated').then((response) => response.json()).then((data) => {
         is_authenticated = data.status;
@@ -10,6 +14,13 @@ function authenticateSpotify() {
         }
     });
 }
+
+/**
+ * Fetches the user's Spotify profile information using an access token.
+ *
+ * @param {string} token - The Spotify access token.
+ * @returns {Promise<Object|undefined>} The profile data if fetched successfully, otherwise undefined.
+ */
 
 async function fetchProfile(token) {
     try {
@@ -47,6 +58,15 @@ async function fetchProfile(token) {
     }
 }
 
+/**
+ * Sends a request to the Spotify Web API with specified parameters.
+ *
+ * @param {string} endpoint - The Spotify API endpoint to call.
+ * @param {string} method - The HTTP method to use (e.g., "GET", "POST").
+ * @param {Object} body - The request body, if any.
+ * @param {string} token - The Spotify access token for authorization.
+ * @returns {Promise<Object>} The JSON response from the Spotify API.
+ */
 
 async function fetchWebApi(endpoint, method, body, token) {
     const res = await fetch(`https://api.spotify.com/${endpoint}`, {
