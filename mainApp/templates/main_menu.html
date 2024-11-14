@@ -7,6 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main Menu</title>
     <link rel="stylesheet" href="{% static 'custom/custom.css' %}">
+
+    <!-- Load holiday-specific styles if theme is set -->
+    {% if theme == "halloween" %}
+        <link rel="stylesheet" href="{% static 'custom/halloween.css' %}">
+    {% elif theme == "christmas" %}
+        <link rel="stylesheet" href="{% static 'custom/christmas.css' %}">
+    {% endif %}
+
     <style>
         /* Add extra spacing between sections */
         .section-spacing {
@@ -25,6 +33,14 @@
     <div class="row-4">
         <img src="{% static 'images/powder_background.png' %}" alt="Responsive Image" class="img-fluid" style="width: 100%; height: auto; max-height: 240px;">
     </div>
+
+    <!-- Add holiday greeting -->
+    {% if theme == "halloween" %}
+        <h2 class="section-spacing" style="color: orange;">🎃 Happy Halloween! 🎃</h2>
+    {% elif theme == "christmas" %}
+        <h2 class="section-spacing" style="color: red;">🎄 Merry Christmas! 🎄</h2>
+    {% endif %}
+
 
     <br>
 

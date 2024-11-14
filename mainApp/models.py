@@ -4,21 +4,17 @@ from django.contrib.auth.models import User
 
 
 class Wrap(models.Model):
-    """
-    Main wrap model to store a user's yearly music statistics.
-    
-    Attributes:
-        user (ForeignKey): Reference to the user associated with the wrap.
-        year (IntegerField): The year of the wrap.
-        minutes_listened (IntegerField): Total minutes the user listened in the wrap year.
-        top_genre (CharField): User's top genre for the year.
-        created_at (DateTimeField): Timestamp for when the wrap was created.
-    """
+    THEME_CHOICES = [
+        ('default', 'Default'),
+        ('halloween', 'Halloween'),
+        ('christmas', 'Christmas'),
+    ]
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='wraps')
     year = models.IntegerField()
     minutes_listened = models.IntegerField()
     top_genre = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
+    theme = models.CharField(max_length=10, choices=THEME_CHOICES, default='default')  # New field
 
     class Meta:
         unique_together = ['user', 'year']
