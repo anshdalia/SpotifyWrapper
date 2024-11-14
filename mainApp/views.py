@@ -14,6 +14,7 @@ from .models import Wrap
 from .models import Wrap, DuoWrap, TopArtist, TopSong
 from SpotifyWrapper.settings import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, REDIRECT_URI
 from .util import *
+from django.contrib import messages
 
 
 # Spotify Authorization URL creation function
@@ -216,3 +217,22 @@ def delete_wrap(request, wrap_id):
         return JsonResponse({'status': 'success'}, status=200)
     except Wrap.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Wrap not found'}, status=404)
+    
+
+@login_required
+def contact_view(request):
+    if request.method == 'POST':
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        email_from = request.user.email  # Use the logged-in user's email
+
+        if subject and message:
+            # Instead of sending an email, just print the details in the terminal
+            print("Subject:", subject)
+            print("Message:", message)
+            print("From:", email_from)
+
+            messages.success(request, 'Your message has been "sent" successfully.')
+        else:
+            messages.error(request, 'Please fill in all fields.')
+    return render(request, 'contact.html')
