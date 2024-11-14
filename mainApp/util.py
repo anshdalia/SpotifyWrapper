@@ -238,7 +238,7 @@ def fetch_top_songs(user):
         user (User): The user whose top songs are retrieved.
 
     Returns:
-        list: A list of top songs with their title, artist, and image URL.
+        list: A list of top songs with their title, artist, image URL, and preview URL.
     """
     data = make_spotify_request(user, "/me/top/tracks", params={"time_range": "medium_term", "limit": 10})
 
@@ -249,7 +249,8 @@ def fetch_top_songs(user):
         {
             "title": song['name'],
             "artist": ", ".join([artist['name'] for artist in song['artists']]),
-            "image_url": song['album']['images'][0]['url'] if song['album']['images'] else ""
+            "image_url": song['album']['images'][0]['url'] if song['album']['images'] else "",
+            "preview_url": song.get('preview_url')  # Add preview URL for playback
         }
         for song in data['items']
     ]

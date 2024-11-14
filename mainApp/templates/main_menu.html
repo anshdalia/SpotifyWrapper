@@ -76,6 +76,9 @@
                     {% for artist in track.artists %}
                         {{ artist.name }}{% if not forloop.last %}, {% endif %}
                     {% endfor %}
+                    <!-- Play and Pause buttons -->
+                    <button onclick="playPreview('{{ track.preview_url }}', this)" class="play-btn btn btn-primary">Play</button>
+                    <button onclick="pausePreview()" class="pause-btn btn btn-secondary" style="display:none;">Pause</button>
                 </li>
             {% empty %}
                 <li class="list-group-item">No top tracks available.</li>
@@ -144,6 +147,44 @@
             });
         }
     }
+
+    let currentAudio = null;
+let currentPlayButton = null;
+
+function playPreview(url, playButton) {
+    // If audio is already playing, pause it and reset buttons
+    if (currentAudio) {
+        currentAudio.pause();
+        if (currentPlayButton) {
+            currentPlayButton.style.display = 'inline';
+            currentPlayButton.nextElementSibling.style.display = 'none';
+        }
+    }
+
+    // Set the current button and audio
+    currentPlayButton = playButton;
+    currentAudio = new Audio(url);
+
+    // Update button display
+    playButton.style.display = 'none';  // Hide play button
+    playButton.nextElementSibling.style.display = 'inline';  // Show pause button
+
+    // Play audio
+    currentAudio.play();
+}
+
+function pausePreview() {
+    if (currentAudio) {
+        currentAudio.pause();
+        
+        // Show play button and hide pause button
+        if (currentPlayButton) {
+            currentPlayButton.style.display = 'inline';
+            currentPlayButton.nextElementSibling.style.display = 'none';
+        }
+    }
+}
+
     
 </script>
 </body>
