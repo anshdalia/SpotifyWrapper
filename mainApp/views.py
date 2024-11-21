@@ -1,3 +1,4 @@
+from django.db.models import Model
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -9,7 +10,9 @@ from requests import Request, post
 
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
-from .models import Wrap
+
+from .forms import InviteFriendForm
+from .models import Wrap, DuoWrap_Request
 
 from .models import Wrap, DuoWrap, TopArtist, TopSong
 from SpotifyWrapper.settings import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, REDIRECT_URI
@@ -181,7 +184,29 @@ def friend_request(request):
     Returns:
         HttpResponse: Rendered friend request page.
     """
-    return render(request, 'friend_requesting.html')
+    # Check to see if current user has any pending Duowrap_requests
+    if request.method == 'POST':
+        form = InviteFriendForm(request.POST)
+        if form.is_valid():
+
+            form.save(user=request.user)
+            print(form.cleaned_data)
+    else:
+        form = InviteFriendForm()
+
+    test = DuoWrap_Request.objects.filter(sender=request.user)
+    print(test[0].wrap_name)
+    print(test[1].wrap_name)
+    print(test[2].wrap_name)
+    print(test.last().wrap_name)
+    invite = DuoWrap_Request.objects.filter(receiver=request.user)
+    context = {
+        'invite': invite,
+    }
+    return render(request, 'friend_requesting.html', {'form': form})
+
+
+
 
 @login_required(login_url='user:login')
 def duo_wrap(request):

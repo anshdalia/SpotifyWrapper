@@ -18,41 +18,49 @@
                     <h1 class="text-center">Register Here</h1>
                     <form method="post" autocomplete="off">
                         {% csrf_token %}
+                        <!-- Form errors-->
+                        {{ registerForm.non_field_errors }}
 
                         <!-- First Name Field -->
                         <div class="form-group mb-3">
                             <label for="{{ registerForm.first_name.id_for_label }}" class="label d-block">First Name</label>
                             {{ registerForm.first_name }}
+                            {{ registerForm.first_name.errors }}
                         </div>
 
                         <!-- Last Name Field -->
                         <div class="form-group mb-3">
                             <label for="{{ registerForm.last_name.id_for_label }}" class="label d-block">Last Name</label>
                             {{ registerForm.last_name }}
+                            {{ registerForm.last_name.errors }}
                         </div>
 
                         <!-- Username Field -->
                         <div class="form-group mb-3">
                             <label for="{{ registerForm.username.id_for_label }}" class="label d-block">Username</label>
                             {{ registerForm.username }}
+                            {{ registerForm.username.errors }}
                         </div>
 
                         <!-- Email Field -->
                         <div class="form-group mb-3">
                             <label for="{{ registerForm.email.id_for_label }}" class="label d-block">Email</label>
                             {{ registerForm.email }}
+                            {{ registerForm.email.errors }}
                         </div>
 
                         <!-- Password Field -->
                         <div class="form-group mb-3">
                             <label for="{{ registerForm.password1.id_for_label }}" class="label d-block">Password</label>
                             {{ registerForm.password1 }}
+                            {{ registerForm.password1.errors }}
                         </div>
 
                         <!-- Confirm Password Field -->
                         <div class="form-group mb-3">
                             <label for="{{ registerForm.password2.id_for_label }}" class="label d-block">Confirm Password</label>
                             {{ registerForm.password2 }}
+                            {{ registerForm.password2.errors }}
                         </div>
 
                         <!-- Register Button -->

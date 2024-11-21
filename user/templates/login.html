@@ -20,14 +20,18 @@
                 <div class="card-body">
                     <form method="post">
                         {% csrf_token %}
+                        <!-- error messages-->
+                        {{ loginform.non_field_errors }}
 
                         <!-- Username Field -->
                         <label for="{{ loginform.username.id_for_label }}" class="label">Username</label>
                         {{ loginform.username }}
+                        {{ loginform.username.errors }}
 
                         <!-- Password Field -->
                         <label for="{{ loginform.password.id_for_label }}" class="label">Password</label>
                         {{ loginform.password }}
+                        {{ loginform.password.errors }}
 
                         <!-- Login Button -->
                         <div class="d-grid gap-2 mt-3">

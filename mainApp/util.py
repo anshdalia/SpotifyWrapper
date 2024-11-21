@@ -123,7 +123,7 @@ def make_spotify_request(user, endpoint, params=None):
     if response.status_code == 200:
         return response.json()
     else:
-        print(f"Failed to fetch {endpoint}: {response.json()}")
+        print("Failed to fetch ") #{endpoint}: {response.json()}")
         return None
 
 def get_recently_played_tracks(user):
@@ -193,7 +193,7 @@ def fetch_top_genre(user):
     Returns:
         str: The most frequent genre among the user's top artists.
     """
-    data = make_spotify_request(user, "/me/top/artists", params={"time_range": "medium_term", "limit": 50})
+    data = make_spotify_request(user, "v1/me/top/artists", params={"time_range": "medium_term", "limit": 50})
 
     if not data:
         return "Unknown"

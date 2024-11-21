@@ -114,3 +114,11 @@ class DuoWrap(models.Model):
     minutes_listened_comparison = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class DuoWrap_Request(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver')
+    wrap_name = models.CharField(max_length=100)
+    request_accepted = models.BooleanField(default=False) #True if receiver accepts request
+    request_denied = models.BooleanField(default=False) #True if receiver denies request

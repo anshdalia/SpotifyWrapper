@@ -13,5 +13,4 @@ urlpatterns = [
     path('single_wrap/<int:wrap_id>/', views.single_wrap_view, name='wrap_detail'),  # viewing a specific wrap
     path('wrap/<int:wrap_id>/delete/', views.delete_wrap, name='wrap_delete'),
     path('contact/', views.contact_view, name='contact'),  # New contact page URL
-
 ]

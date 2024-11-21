@@ -23,6 +23,14 @@ class CreateUserForm(UserCreationForm):
         fields: Lists the fields to include in the form, namely first name, last name, 
                 username, email, password1, and password2.
     """
+    max_length = {
+        'first_name': 150,
+        'last_name': 150,
+        'username': 150,
+        'email': 150,
+        'password1': 150,
+        'password2': 150,
+    }
     first_name = forms.CharField(
         required=True,
         widget=TextInput(attrs={'class': 'form-control'})
@@ -63,5 +71,5 @@ class LoginForm(AuthenticationForm):
         - username: Required field for user's username, displayed as a text input with custom styling.
         - password: Required field for user's password, displayed as a password input with custom styling.
     """
-    username = forms.CharField(widget=TextInput(attrs={'class': 'form-control'}))
-    password = forms.CharField(widget=PasswordInput(attrs={'class': 'form-control'}))
+    username = forms.CharField(max_length=100, widget=TextInput(attrs={'class': 'form-control'}))
+    password = forms.CharField(max_length=100, widget=PasswordInput(attrs={'class': 'form-control'}))
