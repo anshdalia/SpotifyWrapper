@@ -4,30 +4,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Duo Wrap Friend Invite</title>
     <link rel="stylesheet" href="{% static 'custom/custom.css' %}">
     <!--<script src='{% static 'bootstrap/dist/js/bootstrap.bundle.min.js' %}'></script>-->
 </head>
 <body>
-    <h1> Ask a friend to make the duo wrap with you</h1>
-    <div class="alert alert-primary alert-dismissible fade show" role="alert">
-  A simple primary alert with 
-        <button onclick="window.location.href='{% url 'duo_wrap' %}'" class="btn btn-sm btn-secondary">Accept</button>
-        <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="alert"> Deny</button>. Give it a click if you like.
-</div>
+<br>
+    
+    <ul class="invite_list">
+        {% for invite in invite_set %}
+            <li>
+                <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                    {{ invite.sender.username }} is requesting to make a Duo Wrap with you called {{ invite.wrap_name }}.
+                    
+                    <button onclick="window.location.href='{% url 'act_on_friend_request' invite.id 'true' %}'" class="btn btn-sm btn-secondary">Accept</button>
+                    <button onclick="window.location.href='{% url 'act_on_friend_request' invite.id 'false' %}'" class="btn btn-sm btn-primary" data-bs-dismiss="alert"> Deny</button>
+                    
+                </div>
+            
+            </li>
+            {% empty %}
+            <p>You have no invites</p>
+        {% endfor %}
+    </ul>
     
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Send Duo Wrap Friend Invite</button>
+    <button type="submit" class="btn btn-primary">Send Friend Invite</button>
 </form>
     
-    <div id="invite_list"></div>
     
-    <script>
-        document.getElementById("invite_list").innerText = '{{ invite.wrap_name }}';
-        console.log('{{ invite.wrap_name }}')
-    </script>
+    
+    
     
     
     

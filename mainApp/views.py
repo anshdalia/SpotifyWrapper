@@ -199,16 +199,25 @@ def friend_request(request):
     #print(test[1].wrap_name)
     #print(test[2].wrap_name)
     #print(test.last().wrap_name)
-    invite = DuoWrap_Request.objects.filter(receiver=request.user).first()
-    #print("Pending Invite: " + invite.wrap_name)
+    invite_set = DuoWrap_Request.objects.filter(receiver=request.user).all()
+    #print("wrap name: " + invite_set.first().wrap_name)
     context = {
         'form': form,
-        'invite': invite,
+        'invite_set': invite_set,
     }
     return render(request, 'friend_requesting.html', context=context)
 
+def act_on_friend_request(request, invite_id, accepted):
+    invite = DuoWrap_Request.objects.get(id=invite_id)
 
+    #TODO implement what happens if receiver accepts the invite
+    if accepted == 'true':
+        print("do something")
 
+    # Once one invite is acted upon all invites from that user are deleted
+    allInvites = DuoWrap_Request.objects.filter(sender=invite.sender, receiver=request.user).all()
+    allInvites.delete()
+    return redirect('friend_request')
 
 @login_required(login_url='user:login')
 def duo_wrap(request):
