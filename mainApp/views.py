@@ -195,15 +195,17 @@ def friend_request(request):
         form = InviteFriendForm()
 
     test = DuoWrap_Request.objects.filter(sender=request.user)
-    print(test[0].wrap_name)
-    print(test[1].wrap_name)
-    print(test[2].wrap_name)
-    print(test.last().wrap_name)
-    invite = DuoWrap_Request.objects.filter(receiver=request.user)
+    #print(test[0].wrap_name)
+    #print(test[1].wrap_name)
+    #print(test[2].wrap_name)
+    #print(test.last().wrap_name)
+    invite = DuoWrap_Request.objects.filter(receiver=request.user).first()
+    #print("Pending Invite: " + invite.wrap_name)
     context = {
+        'form': form,
         'invite': invite,
     }
-    return render(request, 'friend_requesting.html', {'form': form})
+    return render(request, 'friend_requesting.html', context=context)
 
 
 

@@ -23,31 +23,28 @@ class InviteFriendForm(forms.ModelForm):
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
 
+    # Makes form.is_valid() work by converting receiver text input into a User instance
     def clean_receiver(self):
-        # Get the value of the receiver field
         receiver_username = self.cleaned_data['receiver']
 
-        # Try to fetch the User object based on the username
         try:
             receiver_user = User.objects.get(username=receiver_username)
         except User.DoesNotExist:
             raise forms.ValidationError("User with this username does not exist.")
 
-        # Return the User instance for further processing in the save method
         return receiver_user
 
+    # Sets sender field as current User automatically when making a new DuoWrap_Request
     def save(self, commit=True, user=None):
         if user:
-            self.instance.sender = user  # Set the sender as the logged-in user
+            self.instance.sender = user
 
-        # Convert the receiver username to a User instance
         receiver_username = self.cleaned_data['receiver']
         try:
-            receiver_user = User.objects.get(username=receiver_username)  # Get the User instance by username
-            self.instance.receiver = receiver_user  # Assign the User instance to the receiver field
+            receiver_user = User.objects.get(username=receiver_username)
+            self.instance.receiver = receiver_user
         except User.DoesNotExist:
             raise forms.ValidationError("User with this username does not exist.")
 
-        # Save the instance
         return super().save(commit=commit)
 

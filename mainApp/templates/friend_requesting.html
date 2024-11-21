@@ -22,6 +22,14 @@
     <button type="submit" class="btn btn-primary">Send Duo Wrap Friend Invite</button>
 </form>
     
+    <div id="invite_list"></div>
+    
+    <script>
+        document.getElementById("invite_list").innerText = '{{ invite.wrap_name }}';
+        console.log('{{ invite.wrap_name }}')
+    </script>
+    
+    
     
     <button onclick="window.location.href='{% url 'main_menu' %}'" class="btn btn-secondary">Back to Main Menu</button>
 </body>
