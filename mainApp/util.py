@@ -37,6 +37,8 @@ def update_or_create_user_tokens(user, access_token, token_type, expires_in, ref
     print("update_or_create_user_tokens is called:")
     if tokens:
         print(f"Token exists for user {user}, updating token")
+        print(f"Old Access Token: {tokens.access_token}")
+        print(f"New Access Token: {access_token}")
         tokens.access_token = access_token
         tokens.refresh_token = refresh_token
         tokens.expires_in = expires_in
@@ -79,6 +81,7 @@ def refresh_spotify_token(token):
         token (SpotifyToken): The Spotify token to be refreshed.
     """
     refresh_token = token.refresh_token
+    print("Before refresh: token.refresh_token=" + refresh_token)
     response = requests.post('https://accounts.spotify.com/api/token', data={
         'grant_type': 'refresh_token',
         'refresh_token': refresh_token,
@@ -112,18 +115,21 @@ def make_spotify_request(user, endpoint, params=None):
         "Authorization": f"Bearer {token.access_token}"
     }
     url = f"https://api.spotify.com/v1{endpoint}"
+    print(url)
     response = requests.get(url, headers=headers, params=params)
-
-    if response.status_code == 401:
+    print(response.status_code)
+    if response.status_code == 401 or response.status_code == 403:
         refresh_spotify_token(token)
-        token = get_user_tokens(user)
-        headers["Authorization"] = f"Bearer {token.access_token}"
+        newToken = get_user_tokens(user)
+        print(f"New access token: {newToken.access_token}")
+        headers["Authorization"] = f"Bearer {newToken.access_token}"
+        print(f"Authorization: {headers.get('Authorization')}")
         response = requests.get(url, headers=headers, params=params)
 
     if response.status_code == 200:
         return response.json()
     else:
-        print("Failed to fetch ") #{endpoint}: {response.json()}")
+        print("Failed to fetch " + str(response.status_code)) #{endpoint}: {response.json()}")
         return None
 
 def get_recently_played_tracks(user):
@@ -159,7 +165,7 @@ def get_recently_played_tracks(user):
         ]
         return recent_tracks
     else:
-        print("Failed to fetch recently played tracks:", response.json())
+        #print("Failed to fetch recently played tracks:", response.json())
         return []
 
 
@@ -193,7 +199,7 @@ def fetch_top_genre(user):
     Returns:
         str: The most frequent genre among the user's top artists.
     """
-    data = make_spotify_request(user, "v1/me/top/artists", params={"time_range": "medium_term", "limit": 50})
+    data = make_spotify_request(user, "/me/top/artists", params={"time_range": "medium_term", "limit": 50})
 
     if not data:
         return "Unknown"
