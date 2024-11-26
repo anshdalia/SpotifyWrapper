@@ -212,9 +212,12 @@ def act_on_friend_request(request, invite_id, accepted):
 
     #TODO implement what happens if receiver accepts the invite
     if accepted == 'true':
-        print("do something")
+        user1 = invite.sender
+        user2 = invite.receiver
+        print('do something')
 
-    # Once one invite is acted upon all invites from that user are deleted
+
+    # Once one invite is acted upon all current invites from that user are deleted
     allInvites = DuoWrap_Request.objects.filter(sender=invite.sender, receiver=request.user).all()
     allInvites.delete()
     return redirect('friend_request')

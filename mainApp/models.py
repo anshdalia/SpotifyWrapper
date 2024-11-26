@@ -107,7 +107,7 @@ class DuoWrap(models.Model):
     """
     user1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user1')
     user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user2')
-    year = models.IntegerField()
+    wrap_name = models.CharField(max_length=200)
     top_artists_comparison = models.TextField()
     top_songs_comparison = models.TextField()
     top_genre_comparison = models.TextField()
