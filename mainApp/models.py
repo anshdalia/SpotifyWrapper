@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 class Wrap(models.Model):
@@ -11,6 +12,7 @@ class Wrap(models.Model):
     ]
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='wraps')
     year = models.IntegerField()
+    day = models.DateField(default=timezone.datetime)
     minutes_listened = models.IntegerField()
     top_genre = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -107,7 +109,7 @@ class DuoWrap(models.Model):
     """
     user1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user1')
     user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user2')
-    wrap_name = models.CharField(max_length=200)
+    wrap_name = models.CharField(max_length=200, default="duo wrap")
     top_artists_comparison = models.TextField()
     top_songs_comparison = models.TextField()
     top_genre_comparison = models.TextField()

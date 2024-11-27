@@ -98,7 +98,7 @@ def refresh_spotify_token(token):
     else:
         print("Failed to refresh token:", response)
 
-def make_spotify_request(user, endpoint, params=None):
+def make_spotify_request(user, endpoint, params):
     """
     Makes a request to the Spotify API on behalf of a user.
 
@@ -179,7 +179,9 @@ def fetch_minutes_listened(user):
     Returns:
         int: The total minutes listened.
     """
+    #TODO NOTICE: THIS METHOD DOES NOT WORK AS INTENDED
 
+    print("fetching minutes listened")
     data = make_spotify_request(user, "/me/player/recently-played", params={"limit": 50})
 
     if not data:
@@ -199,17 +201,23 @@ def fetch_top_genre(user):
     Returns:
         str: The most frequent genre among the user's top artists.
     """
-    data = make_spotify_request(user, "/me/top/artists", params={"time_range": "medium_term", "limit": 50})
+    print("fetching top genre")
+    data = make_spotify_request(user, "/me/top/artists", params={"time_range": "medium_term", "limit": 25})
+
 
     if not data:
+        print("no top genre found.")
         return "Unknown"
-
+    print(data)
     genre_count = {}
     for artist in data['items']:
         for genre in artist['genres']:
             genre_count[genre] = genre_count.get(genre, 0) + 1
 
+
     top_genre = max(genre_count, key=genre_count.get)
+    print(top_genre)
+
     return top_genre
 
 def fetch_top_artists(user):
@@ -222,9 +230,11 @@ def fetch_top_artists(user):
     Returns:
         list: A list of top artists with their name and image URL.
     """
+    print("fetching top artists")
     data = make_spotify_request(user, "/me/top/artists", params={"time_range": "medium_term", "limit": 10})
-
+    print(data)
     if not data:
+        print("No top artists found.")
         return []
 
     top_artists = [
@@ -246,11 +256,13 @@ def fetch_top_songs(user):
     Returns:
         list: A list of top songs with their title, artist, image URL, and preview URL.
     """
+    print("fetching top songs")
     data = make_spotify_request(user, "/me/top/tracks", params={"time_range": "medium_term", "limit": 10})
 
     if not data:
+        print("No top songs found.")
         return []
-
+    print(data)
     top_songs = [
         {
             "title": song['name'],
@@ -293,7 +305,7 @@ def create_wrap_for_user(user):
     current_year = timezone.now().year
 
     # Try to get the existing wrap for the year, or create a new one if it doesn’t exist
-    wrap, created = Wrap.objects.get_or_create(user=user, year=current_year)
+    wrap, created = Wrap.objects.get_or_create(user=user, year=current_year, day=timezone.now().date())
 
     # Fetch data
     minutes_listened = fetch_minutes_listened(user)
@@ -310,7 +322,7 @@ def create_wrap_for_user(user):
     wrap.minutes_listened = minutes_listened
     wrap.top_genre = top_genre
     wrap.save()
-
+    print("wrap top genre: " + wrap.top_genre)
     # Clear previous TopArtist and TopSong records for this wrap if updating
     if not created:
         wrap.top_artists.all().delete()
