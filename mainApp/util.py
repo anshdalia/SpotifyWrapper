@@ -139,7 +139,7 @@ def get_recommendations(user1, user2):
 
     # Will find recommendations for 2 users if a second user is specified
     if user2:
-        top_genres = {top_genres, fetch_top_genre(user2)}
+        top_genres = top_genres + ", " + fetch_top_genre(user2)
 
     print("fetching song recommendations")
     data = make_spotify_request(user1, "/recommendations", params={"limit": 10, "seed_genres": top_genres})
