@@ -44,7 +44,7 @@ class SpotifyToken(models.Model):
 
 
 
-
+# Not needed for single wraps anymore
 class TopArtist(models.Model):
     """
     Model to store the top artists for each wrap.
@@ -67,7 +67,7 @@ class TopArtist(models.Model):
     def __str__(self):
         return f"{self.name} (Rank {self.rank})"
 
-
+# Not needed for single wraps anymore
 class TopSong(models.Model):
     """"
     Model to store the top songs for each wrap.
