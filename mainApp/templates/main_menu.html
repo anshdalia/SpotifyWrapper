@@ -134,6 +134,28 @@
                 <li class="list-group-item">No wraps available.</li>
             {% endfor %}
         </ul>
+        <div class="duo-wraps-section">
+        <h2>Your Duo Wraps</h2>
+        {% if duo_wraps %}
+            <div class="duo-wraps-list">
+                {% for duo_wrap in duo_wraps %}
+                    <div class="duo-wrap-item">
+                        <a href="{% url 'duo_wrap' duo_wrap.id %}">
+                            Duo Wrap with
+                            {% if duo_wrap.user1 == user %}
+                                {{ duo_wrap.user2.username }}
+                            {% else %}
+                                {{ duo_wrap.user1.username }}
+                            {% endif %}
+                            ({{ duo_wrap.year }})
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No Duo Wraps yet. Invite a friend!</p>
+        {% endif %}
+    </div>
     </div>
 </div>
 

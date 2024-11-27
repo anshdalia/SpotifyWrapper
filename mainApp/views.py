@@ -11,8 +11,11 @@ from requests import Request, post
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
 
+from . import models
 from .forms import InviteFriendForm
 from .models import Wrap, DuoWrap_Request
+from django.db import models
+from django.db.models import Q
 
 from .models import Wrap, DuoWrap, TopArtist, TopSong
 from SpotifyWrapper.settings import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, REDIRECT_URI
@@ -119,6 +122,10 @@ def main_menu(request):
     # Fetch all wraps for the user
     user_wraps = Wrap.objects.filter(user=user).order_by('-created_at')
 
+    duo_wraps = DuoWrap.objects.filter(
+        models.Q(user1=user) | models.Q(user2=user)
+    ).order_by('-created_at')
+
     context = {
         'user': user,
         'spotify_token': spotify_token,
@@ -126,6 +133,7 @@ def main_menu(request):
         'top_tracks': top_tracks,
         'top_artists': top_artists,
         'user_wraps': user_wraps,  # Pass the wraps to the template
+        'duo_wraps': duo_wraps,
     }
 
     return render(request, 'main_menu.html', context)
@@ -210,36 +218,67 @@ def friend_request(request):
     }
     return render(request, 'friend_requesting.html', context=context)
 
-def act_on_friend_request(request, invite_id, accepted):
-    invite = DuoWrap_Request.objects.get(id=invite_id)
-
-    #TODO implement what happens if receiver accepts the invite
-    if accepted == 'true':
-        user1 = invite.sender
-        user2 = invite.receiver
-        print('do something')
-
-
-    # Once one invite is acted upon all current invites from that user are deleted
-    allInvites = DuoWrap_Request.objects.filter(sender=invite.sender, receiver=request.user).all()
-    allInvites.delete()
-    return redirect('friend_request')
 
 @login_required(login_url='user:login')
-def duo_wrap(request):
+def act_on_friend_request(request, invite_id, accepted):
     """
-    Creates a new wrap for the user and redirects to the main menu.
+    Handle friend request acceptance and create DuoWrap if accepted.
 
     Args:
         request (HttpRequest): The HTTP request.
+        invite_id (int): ID of the friend request.
+        accepted (str): Whether the request was accepted ('true' or 'false').
 
     Returns:
-        HttpResponseRedirect: Redirects to the main menu.
+        HttpResponseRedirect: Redirects to friend request page.
     """
+    invite = get_object_or_404(DuoWrap_Request, id=invite_id, receiver=request.user)
+    current_year = timezone.now().year
 
-    # Logic to create a new wrap every time this endpoint is hit
-    create_wrap_for_user(request.user)  # create new wrap on each request
-    return redirect('main_menu')
+    if accepted == 'true':
+        try:
+            # Check if wraps exist for both users for the current year
+            sender_wrap = Wrap.objects.get(user=invite.sender, year=current_year)
+            receiver_wrap = Wrap.objects.get(user=invite.receiver, year=current_year)
+
+            # Create DuoWrap
+            duo_wrap, created = DuoWrap.objects.get_or_create(
+                user1=invite.sender,
+                user2=invite.receiver,
+                year=current_year
+            )
+
+            if created:
+                messages.success(request, f"Duo Wrap created with {invite.sender.username}!")
+        except Wrap.DoesNotExist:
+            # If either user doesn't have a wrap for the current year
+            messages.error(request, "Both users must have a wrap for the current year.")
+            return redirect('friend_request')
+
+    # Delete all invites from this sender to this receiver
+    DuoWrap_Request.objects.filter(sender=invite.sender, receiver=request.user).delete()
+    return redirect('friend_request')
+
+
+@login_required(login_url='user:login')
+def duo_wrap_view(request, duo_wrap_id):
+    """
+    Display the details of a specific Duo Wrap.
+
+    Args:
+        request (HttpRequest): The HTTP request.
+        duo_wrap_id (int): ID of the Duo Wrap to display.
+
+    Returns:
+        HttpResponse: Rendered Duo Wrap page.
+    """
+    duo_wrap = get_object_or_404(
+        DuoWrap,
+        Q(id=duo_wrap_id) & (Q(user1=request.user) | Q(user2=request.user))
+    )
+
+    context = duo_wrap.get_details()
+    return render(request, 'duo_wrap.html', context)
 
 @login_required
 @require_http_methods(["DELETE"])

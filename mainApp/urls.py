@@ -8,7 +8,7 @@ urlpatterns = [
     path('is-authenticated', IsAuthenticated.as_view()),
     path('main_menu/', views.main_menu, name='main_menu'),
     path('friend_request/', views.friend_request, name='friend_request'),
-    path('duo_wrap/', views.duo_wrap, name='duo_wrap'),
+    path('duo_wrap/<int:duo_wrap_id>/', views.duo_wrap_view, name='duo_wrap'),
     path('single_wrap/', views.single_wrap_view, name='wrap_current'),  # updated to ensure wrap_current is present
     path('single_wrap/<int:wrap_id>/', views.single_wrap_view, name='wrap_detail'),  # viewing a specific wrap
     path('wrap/<int:wrap_id>/delete/', views.delete_wrap, name='wrap_delete'),
