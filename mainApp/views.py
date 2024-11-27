@@ -12,7 +12,7 @@ from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
 
 from . import models
-from .forms import InviteFriendForm
+from .forms import InviteFriendForm, SingleWrapNameForm
 from .models import Wrap, DuoWrap_Request
 from django.db import models
 from django.db.models import Q
@@ -138,49 +138,72 @@ def main_menu(request):
 
     return render(request, 'main_menu.html', context)
 
-@login_required(login_url='user:login')
-def single_wrap_view(request, wrap_id=None):
-    """
-    Displays a specific year's wrap for the user, or creates one for the current year if not specified.
 
-    Args:
-        request (HttpRequest): The HTTP request.
-        wrap_id (int, optional): ID of the wrap to be displayed.
+def create_new_single_wrap(request):
+    if request.method == 'POST':
+        form = SingleWrapNameForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name']
 
-    Returns:
-        HttpResponse: Rendered wrap page with top artists and top songs for the year.
-    """
-    user = request.user
-    current_year = timezone.now().year
-    current_day = timezone.now().date()
+            wrap = create_wrap_for_user(request.user, name)
 
 
-
-    # If no specific wrap_id is provided, look for or create the current year's wrap
-    if wrap_id is None:
-        # Attempt to get or create the current year's wrap with meaningful data
-        wrap, created = Wrap.objects.get_or_create(user=user, year=current_year, defaults={
-            'minutes_listened': 0,  # Temporary default value
-            'top_genre': 'Unknown'  # Temporary default value
-        })
-        
-        # If it was created with defaults, fetch actual data
-        if created:
-            wrap = create_wrap_for_user(user)  # Populate with actual data
-
+            # Redirect to a success page or another view
+            return redirect('single_wrap_view', wrap.id)
     else:
-        wrap = get_object_or_404(Wrap, id=wrap_id, user=user)
+        form = SingleWrapNameForm()
 
-    top_artists = wrap.top_artists.all()
-    top_songs = wrap.top_songs.all()
+    return render(request, 'create_new_single_wrap.html', {'form': form})
 
-    context = {
-        'wrap': wrap,
-        'top_artists': top_artists,
-        'top_songs': top_songs,
-    }
-    return render(request, 'single_wrap.html', context)
+@login_required(login_url='user:login')
+def single_wrap_view(request, wrap_id):
+    wrap = get_object_or_404(Wrap, id=wrap_id)
+    return render(request, 'single_wrap.html', {'wrap': wrap})
 
+############ OLD VIEW ############
+
+# @login_required(login_url='user:login')
+# def single_wrap_view(request, wrap_id=None):
+#     """
+#     Displays a specific year's wrap for the user, or creates one for the current year if not specified.
+#
+#     Args:
+#         request (HttpRequest): The HTTP request.
+#         wrap_id (int, optional): ID of the wrap to be displayed.
+#
+#     Returns:
+#         HttpResponse: Rendered wrap page with top artists and top songs for the year.
+#     """
+#     user = request.user
+#     current_year = timezone.now().year
+#     current_day = timezone.now().date()
+#
+#
+#
+#     # If no specific wrap_id is provided, look for or create the current year's wrap
+#     if wrap_id is None:
+#         # Attempt to get or create the current year's wrap with meaningful data
+#         wrap, created = Wrap.objects.get_or_create(user=user, year=current_year, defaults={
+#             'minutes_listened': 0,  # Temporary default value
+#             'top_genre': 'Unknown'  # Temporary default value
+#         })
+#
+#         # If it was created with defaults, fetch actual data
+#         if created:
+#             wrap = create_wrap_for_user(user)  # Populate with actual data
+#
+#     else:
+#         wrap = get_object_or_404(Wrap, id=wrap_id, user=user)
+#
+#     top_artists = wrap.top_artists.all()
+#     top_songs = wrap.top_songs.all()
+#
+#     context = {
+#         'wrap': wrap,
+#         'top_artists': top_artists,
+#         'top_songs': top_songs,
+#     }
+#     return render(request, 'single_wrap.html', context)
 
 
 

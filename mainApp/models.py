@@ -11,16 +11,13 @@ class Wrap(models.Model):
         ('christmas', 'Christmas'),
     ]
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='wraps')
-    year = models.IntegerField()
-
-    minutes_listened = models.IntegerField()
+    name = models.CharField(max_length=100)
+    top_artistsJSON = models.JSONField(null=True, blank=True, default=dict)
+    top_songsJSON = models.JSONField(null=True, blank=True, default=dict)
+    song_recommendationsJSON = models.JSONField(null=True, blank=True, default=dict)
     top_genre = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
-    theme = models.CharField(max_length=10, choices=THEME_CHOICES, default='default')  # New field
-
-    class Meta:
-        unique_together = ['user', 'year']
-        ordering = ['-year']
+    theme = models.CharField(max_length=10, choices=THEME_CHOICES, default='default')
 
     def __str__(self):
         return f"{self.user.username}'s {self.year} Wrap"
@@ -45,10 +42,13 @@ class SpotifyToken(models.Model):
     expires_in = models.DateTimeField()
     token_type = models.CharField(max_length=50)
 
+
+
+
 class TopArtist(models.Model):
     """
     Model to store the top artists for each wrap.
-    
+
     Attributes:
         wrap (ForeignKey): Reference to the associated wrap.
         name (CharField): Name of the artist.
@@ -71,7 +71,7 @@ class TopArtist(models.Model):
 class TopSong(models.Model):
     """"
     Model to store the top songs for each wrap.
-    
+
     Attributes:
         wrap (ForeignKey): Reference to the associated wrap.
         title (CharField): Title of the song.

@@ -18,7 +18,7 @@
             <!-- Welcome Slide -->
             <div class="carousel-slide welcome-slide active">
                 <div class="slide-content">
-                    <div class="title animate__animated animate__fadeInUp">Your {{ wrap.year }} Wrapped</div>
+                    <div class="title animate__animated animate__fadeInUp">Your {{ wrap.name }} Wrap</div>
                     <div class="subtitle animate__animated animate__fadeInUp">Let's see what you've been up to</div>
                     <div class="highlight animate__animated animate__zoomIn">Ready?</div>
                 </div>
@@ -42,7 +42,7 @@
                 <div class="slide-content">
                     <div class="title">Your Top Artists</div>
                     <ul class="top-list">
-                        {% for artist in top_artists %}
+                        {% for artist in wrap.top_artistsJSON %}
                         <li class="top-item animate__animated animate__fadeInLeft" {% if forloop.counter0 > 0 %}style="animation-delay: {{ forloop.counter0|multiply:0.2 }}s;"{% endif %}>
                             <span class="item-rank">{{ artist.rank }}</span>
                             <img class="item-image" src="{{ artist.image_url|default:'/api/placeholder/60/60' }}" alt="{{ artist.name }}">
@@ -73,7 +73,7 @@
                 <div class="slide-content">
                     <div class="title">Your Top Songs</div>
                     <ul class="top-list">
-                        {% for song in top_songs %}
+                        {% for song in wrap.top_songsJSON %}
                         <li class="top-item animate__animated animate__fadeInRight" {% if forloop.counter0 > 0 %}style="animation-delay: {{ forloop.counter0|multiply:0.2 }}s;"{% endif %}>
                             <span class="item-rank">{{ song.rank }}</span>
                             <img class="item-image" src="{{ song.image_url|default:'/api/placeholder/60/60' }}" alt="{{ song.title }}">
@@ -118,18 +118,39 @@
                         <path d="M50 50 L70 50" stroke="white" stroke-width="4" fill="none"/>
                         <circle cx="50" cy="50" r="5" fill="white"/>
                     </svg>
-                    <div class="transition-text">Counting Every Minute...</div>
+                    <div class="transition-text">Here are some song recommendations</div>
                 </div>
             </div>
 
-            <!-- Minutes Listened Slide -->
+            <!-- Song Recommendations Slide -->
+            <div class="carousel-slide minutes-slide">
+                <div class="slide-content">
+                    <div class="title">Your Song Recommendations</div>
+                    <ul class="top-list">
+                        {% for song in wrap.song_recommendationsJSON %}
+                        <li class="top-item animate__animated animate__fadeInRight" {% if forloop.counter0 > 0 %}style="animation-delay: {{ forloop.counter0|multiply:0.2 }}s;"{% endif %}>
+                            <span class="item-rank">{{ song.rank }}</span>
+                            <img class="item-image" src="{{ song.image_url|default:'/api/placeholder/60/60' }}" alt="{{ song.title }}">
+                            <div class="item-details">
+                                <p class="item-name">{{ song.title }}</p>
+                                <small>{{ song.artist }}</small>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        
+        
+        
+            <!-- Minutes Listened Slide
             <div class="carousel-slide minutes-slide">
                 <div class="slide-content">
                     <div class="title">Minutes Listened</div>
                     <div class="highlight animate__animated animate__zoomIn">{{ wrap.minutes_listened }}</div>
                     <div class="subtitle">That's like listening to "All Too Well (10 Minute Version)" {{ wrap.minutes_listened|default:0|divisibleby:10 }} times!</div>
                 </div>
-            </div>
+            </div>-->
 
             <div class="share-container">
                 <h3>Share Your Wrapped</h3>

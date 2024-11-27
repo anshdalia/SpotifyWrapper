@@ -132,6 +132,34 @@ def make_spotify_request(user, endpoint, params):
         print("Failed to fetch " + str(response.status_code)) #{endpoint}: {response.json()}")
         return None
 
+
+# Generates song recommendations based off of top genres for either 1 or 2 users
+def get_recommendations(user1, user2):
+    top_genres = fetch_top_genre(user1)
+
+    # Will find recommendations for 2 users if a second user is specified
+    if user2:
+        top_genres = {top_genres, fetch_top_genre(user2)}
+
+    print("fetching song recommendations")
+    data = make_spotify_request(user1, "/recommendations", params={"limit": 10, "seed_genres": top_genres})
+
+    if not data:
+        print('song recommendations not found')
+        return []
+
+    print(data)
+    song_recommendations = [
+        {
+            "title": song['name'],
+            "artist": ", ".join([artist['name'] for artist in song['artists']]),
+            "image_url": song['album']['images'][0]['url'] if song['album']['images'] else "",
+            "preview_url": song.get('preview_url')  # Add preview URL for playback
+        }
+        for song in data['tracks']
+    ]
+    return song_recommendations
+
 def get_recently_played_tracks(user):
     """
     Retrieves the user's recently played tracks from Spotify.
@@ -169,6 +197,8 @@ def get_recently_played_tracks(user):
         return []
 
 
+
+#TODO NOTICE: THIS METHOD DOES NOT WORK AS INTENDED
 def fetch_minutes_listened(user):
     """
     Calculates the total minutes listened by the user from their recently played tracks.
@@ -179,7 +209,7 @@ def fetch_minutes_listened(user):
     Returns:
         int: The total minutes listened.
     """
-    #TODO NOTICE: THIS METHOD DOES NOT WORK AS INTENDED
+
 
     print("fetching minutes listened")
     data = make_spotify_request(user, "/me/player/recently-played", params={"limit": 50})
@@ -190,6 +220,7 @@ def fetch_minutes_listened(user):
     total_ms = sum([item['track']['duration_ms'] for item in data['items']])
     total_minutes = total_ms / (1000 * 60)
     return int(total_minutes)
+
 
 def fetch_top_genre(user):
     """
@@ -292,61 +323,85 @@ def get_top_items(user, item_type='tracks', time_range='medium_term', limit=10):
     data = make_spotify_request(user, endpoint, params)
     return data.get("items", []) if data else []
 
-def create_wrap_for_user(user):
-    """
-    Creates or updates a user's yearly wrap with their Spotify data.
+def create_wrap_for_user(user, name):
+    wrap, created = Wrap.objects.get_or_create(user=user, name=name)
 
-    Args:
-        user (User): The user for whom the wrap is created or updated.
-
-    Returns:
-        Wrap: The user's wrap instance containing music statistics.
-    """
-    current_year = timezone.now().year
-
-    # Try to get the existing wrap for the year, or create a new one if it doesn’t exist
-    wrap, created = Wrap.objects.get_or_create(user=user, year=current_year)
-
-    # Fetch data
-    minutes_listened = fetch_minutes_listened(user)
     top_genre = fetch_top_genre(user)
     top_artists = fetch_top_artists(user)
     top_songs = fetch_top_songs(user)
+    song_recommendations = get_recommendations(user, None)
 
-    print(f"{'Creating' if created else 'Updating'} wrap for {user} - Year: {current_year}")
-    print(f"Minutes Listened: {minutes_listened}, Top Genre: {top_genre}")
+    print(f"{'Creating' if created else 'Updating'} wrap for {user}")
+    print(f"Top Genre: {top_genre}")
     print(f"Top Artists: {top_artists}")
     print(f"Top Songs: {top_songs}")
+    print(f"Top Songs: {song_recommendations}")
 
-    # Update wrap data
-    wrap.minutes_listened = minutes_listened
     wrap.top_genre = top_genre
+    wrap.top_artistsJSON = top_artists
+    wrap.top_songsJSON = top_songs
+    wrap.song_recommendationsJSON = song_recommendations
     wrap.save()
-    print("wrap top genre: " + wrap.top_genre)
-    # Clear previous TopArtist and TopSong records for this wrap if updating
-    if not created:
-        wrap.top_artists.all().delete()
-        wrap.top_songs.all().delete()
-
-    # Create TopArtist entries
-    for rank, artist in enumerate(top_artists, start=1):
-        print(f"Saving artist {artist['name']} at rank {rank}")
-        TopArtist.objects.create(
-            wrap=wrap,
-            name=artist['name'],
-            rank=rank,
-            image_url=artist.get('image_url', '')
-        )
-
-    # Create TopSong entries
-    for rank, song in enumerate(top_songs, start=1):
-        print(f"Saving song {song['title']} by {song['artist']} at rank {rank}")
-        TopSong.objects.create(
-            wrap=wrap,
-            title=song['title'],
-            artist=song['artist'],
-            rank=rank,
-            image_url=song.get('image_url', '')
-        )
 
     return wrap
+
+
+############ OLD CREATE WRAP METHOD ############
+# def create_wrap_for_user(user):
+#     """
+#     Creates or updates a user's yearly wrap with their Spotify data.
+#
+#     Args:
+#         user (User): The user for whom the wrap is created or updated.
+#
+#     Returns:
+#         Wrap: The user's wrap instance containing music statistics.
+#     """
+#     current_year = timezone.now().year
+#
+#     # Try to get the existing wrap for the year, or create a new one if it doesn’t exist
+#     wrap, created = Wrap.objects.get_or_create(user=user, year=current_year)
+#
+#     # Fetch data
+#     minutes_listened = fetch_minutes_listened(user)
+#     top_genre = fetch_top_genre(user)
+#     top_artists = fetch_top_artists(user)
+#     top_songs = fetch_top_songs(user)
+#
+#     print(f"{'Creating' if created else 'Updating'} wrap for {user} - Year: {current_year}")
+#     print(f"Minutes Listened: {minutes_listened}, Top Genre: {top_genre}")
+#     print(f"Top Artists: {top_artists}")
+#     print(f"Top Songs: {top_songs}")
+#
+#     # Update wrap data
+#     wrap.minutes_listened = minutes_listened
+#     wrap.top_genre = top_genre
+#     wrap.save()
+#     print("wrap top genre: " + wrap.top_genre)
+#     # Clear previous TopArtist and TopSong records for this wrap if updating
+#     if not created:
+#         wrap.top_artists.all().delete()
+#         wrap.top_songs.all().delete()
+#
+#     # Create TopArtist entries
+#     for rank, artist in enumerate(top_artists, start=1):
+#         print(f"Saving artist {artist['name']} at rank {rank}")
+#         TopArtist.objects.create(
+#             wrap=wrap,
+#             name=artist['name'],
+#             rank=rank,
+#             image_url=artist.get('image_url', '')
+#         )
+#
+#     # Create TopSong entries
+#     for rank, song in enumerate(top_songs, start=1):
+#         print(f"Saving song {song['title']} by {song['artist']} at rank {rank}")
+#         TopSong.objects.create(
+#             wrap=wrap,
+#             title=song['title'],
+#             artist=song['artist'],
+#             rank=rank,
+#             image_url=song.get('image_url', '')
+#         )
+#
+#     return wrap

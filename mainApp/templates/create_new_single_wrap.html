@@ -1,0 +1,31 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Menu</title>
+    <link rel="stylesheet" href="{% static 'custom/custom.css' %}">
+
+    <style>
+        /* Add extra spacing between sections */
+        .section-spacing {
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        /* Ensure some padding at the bottom of the page */
+        .page-end-spacing {
+            padding-bottom: 50px;
+        }
+    </style>
+</head>
+<body>
+    <h1>What is your wrap's name?</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Create</button>
+    </form>
+</body>
+</html>

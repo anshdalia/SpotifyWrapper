@@ -48,3 +48,6 @@ class InviteFriendForm(forms.ModelForm):
 
         return super().save(commit=commit)
 
+
+class SingleWrapNameForm(forms.Form):
+    name = forms.CharField(max_length=255, label="Wrap Name")

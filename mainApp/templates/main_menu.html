@@ -48,7 +48,7 @@
         <!-- buttons row -->
         <div class="row section-spacing">
             <div class="col col-lg-2">
-                <button onclick="window.location.href='{% url 'wrap_current' %}'" class="btn btn-secondary">Create a new Wrap</button>
+                <button onclick="window.location.href='{% url 'create_new_single_wrap' %}'" class="btn btn-secondary">Create a new Wrap</button>
             </div>
             <div class="col col-lg-2">    
                 <button onclick="window.location.href='{% url 'friend_request' %}'" class="btn btn-secondary">Create a new Duo Wrap</button>
@@ -117,7 +117,7 @@
                 <li id="wrap-{{ wrap.id }}" class="list-group-item list-group-item-action">
                     <div class="row align-items-center">
                         <div class="col col-3">
-                            <a href="{% url 'wrap_detail' wrap.id %}">{{ wrap.year }} Wrap</a>
+                            <a href="{% url 'wrap_detail' wrap.id %}">{{ wrap.name }}</a>
                         </div>
                         <div class="col col-3">
                             Date Created: {{ wrap.created_at|date:"m/d/Y" }}
