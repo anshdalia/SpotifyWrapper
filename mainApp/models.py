@@ -12,7 +12,7 @@ class Wrap(models.Model):
     ]
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='wraps')
     year = models.IntegerField()
-    day = models.DateField(default=timezone.datetime)
+
     minutes_listened = models.IntegerField()
     top_genre = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)

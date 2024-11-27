@@ -305,7 +305,7 @@ def create_wrap_for_user(user):
     current_year = timezone.now().year
 
     # Try to get the existing wrap for the year, or create a new one if it doesn’t exist
-    wrap, created = Wrap.objects.get_or_create(user=user, year=current_year, day=timezone.now().date())
+    wrap, created = Wrap.objects.get_or_create(user=user, year=current_year)
 
     # Fetch data
     minutes_listened = fetch_minutes_listened(user)

@@ -159,7 +159,7 @@ def single_wrap_view(request, wrap_id=None):
     # If no specific wrap_id is provided, look for or create the current year's wrap
     if wrap_id is None:
         # Attempt to get or create the current year's wrap with meaningful data
-        wrap, created = Wrap.objects.get_or_create(user=user, year=current_year, day=current_day, defaults={
+        wrap, created = Wrap.objects.get_or_create(user=user, year=current_year, defaults={
             'minutes_listened': 0,  # Temporary default value
             'top_genre': 'Unknown'  # Temporary default value
         })
