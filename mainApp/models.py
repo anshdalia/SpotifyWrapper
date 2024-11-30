@@ -14,7 +14,8 @@ class Wrap(models.Model):
     name = models.CharField(max_length=100)
     top_artistsJSON = models.JSONField(null=True, blank=True, default=dict)
     top_songsJSON = models.JSONField(null=True, blank=True, default=dict)
-    song_recommendationsJSON = models.JSONField(null=True, blank=True, default=dict)
+    #song_recommendationsJSON = models.JSONField(null=True, blank=True, default=dict) DEPRECATED
+    minutes_listened = models.IntegerField(default=0)
     top_genre = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     theme = models.CharField(max_length=10, choices=THEME_CHOICES, default='default')

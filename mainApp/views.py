@@ -158,7 +158,12 @@ def create_new_single_wrap(request):
 @login_required(login_url='user:login')
 def single_wrap_view(request, wrap_id):
     wrap = get_object_or_404(Wrap, id=wrap_id)
-    return render(request, 'single_wrap.html', {'wrap': wrap})
+    all_too_well_times = int(wrap.minutes_listened / 10)
+    context = {
+        'wrap': wrap,
+        'all_too_well_times': all_too_well_times,
+    }
+    return render(request, 'single_wrap.html', context=context)
 
 ############ OLD VIEW ############
 
