@@ -51,3 +51,37 @@ class InviteFriendForm(forms.ModelForm):
 
 class SingleWrapNameForm(forms.Form):
     name = forms.CharField(max_length=255, label="Wrap Name")
+
+
+class DuoWrapRequestForm(forms.ModelForm):
+    """
+    Form for creating a DuoWrap_Request, focusing on specifying the wrap name.
+    """
+    class Meta:
+        model = DuoWrap_Request
+        fields = ['wrap_name']
+        labels = {
+            'wrap_name': 'Duo Wrap Name',
+        }
+
+    wrap_name = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        label="Duo Wrap Name"
+    )
+
+    def save(self, user, commit=True):
+        """
+        Custom save method to associate the sender with the request.
+
+        Args:
+            user (User): The user creating the request.
+            commit (bool): Whether to commit the changes to the database.
+
+        Returns:
+            DuoWrap_Request: The saved DuoWrap_Request instance.
+        """
+        instance = super().save(commit=False)
+        instance.sender = user
+        if commit:
+            instance.save()
+        return instance

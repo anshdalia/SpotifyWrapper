@@ -123,7 +123,7 @@ def main_menu(request):
     user_wraps = Wrap.objects.filter(user=user).order_by('-created_at')
 
     duo_wraps = DuoWrap.objects.filter(
-        models.Q(user1=user) | models.Q(user2=user)
+        Q(user1=user) | Q(user2=user)
     ).order_by('-created_at')
 
     context = {
@@ -156,9 +156,25 @@ def create_new_single_wrap(request):
     return render(request, 'create_new_single_wrap.html', {'form': form})
 
 @login_required(login_url='user:login')
-def single_wrap_view(request, wrap_id):
-    wrap = get_object_or_404(Wrap, id=wrap_id)
-    return render(request, 'single_wrap.html', {'wrap': wrap})
+def single_wrap_view(request, wrap_id=None):
+    """
+    Displays a specific wrap for the user, identified by name.
+
+    Args:
+        request (HttpRequest): The HTTP request.
+        wrap_id (int, optional): ID of the wrap to be displayed.
+
+    Returns:
+        HttpResponse: Rendered wrap page with top artists and top songs.
+    """
+    wrap = get_object_or_404(Wrap, id=wrap_id, user=request.user)
+
+    context = {
+        'wrap': wrap,
+        'top_artists': wrap.top_artists.all(),
+        'top_songs': wrap.top_songs.all(),
+    }
+    return render(request, 'single_wrap.html', context)
 
 ############ OLD VIEW ############
 
@@ -241,44 +257,62 @@ def friend_request(request):
     }
     return render(request, 'friend_requesting.html', context=context)
 
-
 @login_required(login_url='user:login')
 def act_on_friend_request(request, invite_id, accepted):
     """
     Handle friend request acceptance and create DuoWrap if accepted.
-
-    Args:
-        request (HttpRequest): The HTTP request.
-        invite_id (int): ID of the friend request.
-        accepted (str): Whether the request was accepted ('true' or 'false').
-
-    Returns:
-        HttpResponseRedirect: Redirects to friend request page.
     """
     invite = get_object_or_404(DuoWrap_Request, id=invite_id, receiver=request.user)
-    current_year = timezone.now().year
 
     if accepted == 'true':
         try:
-            # Check if wraps exist for both users for the current year
-            sender_wrap = Wrap.objects.get(user=invite.sender, year=current_year)
-            receiver_wrap = Wrap.objects.get(user=invite.receiver, year=current_year)
+            # Use the wrap name from the invite to create the DuoWrap
+            wrap_name = invite.wrap_name
 
-            # Create DuoWrap
+            # Create or retrieve the DuoWrap
             duo_wrap, created = DuoWrap.objects.get_or_create(
                 user1=invite.sender,
                 user2=invite.receiver,
-                year=current_year
+                wrap_name=wrap_name,
+                defaults={
+                    'top_artists_comparison': {},
+                    'top_songs_comparison': {},
+                    'top_genre_comparison': {},
+                    'minutes_listened_comparison': {},
+                }
             )
 
             if created:
-                messages.success(request, f"Duo Wrap created with {invite.sender.username}!")
-        except Wrap.DoesNotExist:
-            # If either user doesn't have a wrap for the current year
-            messages.error(request, "Both users must have a wrap for the current year.")
+                # Fetch Spotify data for both users
+                sender_data = fetch_duo_wrap_data(invite.sender)
+                receiver_data = fetch_duo_wrap_data(invite.receiver)
+
+                # Populate the DuoWrap fields
+                duo_wrap.top_artists_comparison = {
+                    'user1': sender_data['top_artists'],
+                    'user2': receiver_data['top_artists'],
+                }
+                duo_wrap.top_songs_comparison = {
+                    'user1': sender_data['top_songs'],
+                    'user2': receiver_data['top_songs'],
+                }
+                duo_wrap.top_genre_comparison = {
+                    'user1': sender_data['top_genre'],
+                    'user2': receiver_data['top_genre'],
+                }
+                duo_wrap.minutes_listened_comparison = {
+                    'user1': sender_data['minutes_listened'],
+                    'user2': receiver_data['minutes_listened'],
+                }
+
+                # Save the populated DuoWrap
+                duo_wrap.save()
+                messages.success(request, f"Duo Wrap '{wrap_name}' created with {invite.sender.username}!")
+        except Exception as e:
+            messages.error(request, f"Error creating Duo Wrap: {str(e)}")
             return redirect('friend_request')
 
-    # Delete all invites from this sender to this receiver
+    # Delete the invite regardless of acceptance or denial
     DuoWrap_Request.objects.filter(sender=invite.sender, receiver=request.user).delete()
     return redirect('friend_request')
 
@@ -287,20 +321,16 @@ def act_on_friend_request(request, invite_id, accepted):
 def duo_wrap_view(request, duo_wrap_id):
     """
     Display the details of a specific Duo Wrap.
-
-    Args:
-        request (HttpRequest): The HTTP request.
-        duo_wrap_id (int): ID of the Duo Wrap to display.
-
-    Returns:
-        HttpResponse: Rendered Duo Wrap page.
     """
     duo_wrap = get_object_or_404(
         DuoWrap,
         Q(id=duo_wrap_id) & (Q(user1=request.user) | Q(user2=request.user))
     )
 
-    context = duo_wrap.get_details()
+    context = {
+        'duo_wrap': duo_wrap,
+        'details': duo_wrap.get_details(),
+    }
     return render(request, 'duo_wrap.html', context)
 
 @login_required
@@ -323,6 +353,32 @@ def delete_wrap(request, wrap_id):
     except Wrap.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Wrap not found'}, status=404)
     
+
+@login_required
+@require_http_methods(["DELETE"])
+def delete_duo_wrap(request, duo_wrap_id):
+    """
+    Deletes a specified Duo Wrap for the logged-in user.
+
+    Args:
+        request (HttpRequest): The HTTP request.
+        duo_wrap_id (int): The ID of the Duo Wrap to delete.
+
+    Returns:
+        JsonResponse: JSON response indicating success or failure of deletion.
+    """
+    try:
+        # Fetch the Duo Wrap, ensuring the user is one of the participants
+        duo_wrap = get_object_or_404(
+            DuoWrap,
+            Q(id=duo_wrap_id) & (Q(user1=request.user) | Q(user2=request.user))
+        )
+
+        # Delete the Duo Wrap
+        duo_wrap.delete()
+        return JsonResponse({'status': 'success'}, status=200)
+    except DuoWrap.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Duo Wrap not found or not authorized to delete.'}, status=404)
 
 @login_required
 def contact_view(request):

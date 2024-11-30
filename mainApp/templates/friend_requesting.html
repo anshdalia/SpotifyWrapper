@@ -10,36 +10,36 @@
 </head>
 <body>
 <br>
-    
+
     <ul class="invite_list">
         {% for invite in invite_set %}
             <li>
                 <div class="alert alert-primary alert-dismissible fade show" role="alert">
                     {{ invite.sender.username }} is requesting to make a Duo Wrap with you called {{ invite.wrap_name }}.
-                    
+
                     <button onclick="window.location.href='{% url 'act_on_friend_request' invite.id 'true' %}'" class="btn btn-sm btn-secondary">Accept</button>
                     <button onclick="window.location.href='{% url 'act_on_friend_request' invite.id 'false' %}'" class="btn btn-sm btn-primary" data-bs-dismiss="alert"> Deny</button>
-                    
+
                 </div>
-            
+
             </li>
             {% empty %}
             <p>You have no invites</p>
         {% endfor %}
     </ul>
-    
+
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
     <button type="submit" class="btn btn-primary">Send Friend Invite</button>
 </form>
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
     <button onclick="window.location.href='{% url 'main_menu' %}'" class="btn btn-secondary">Back to Main Menu</button>
 </body>
 </html>

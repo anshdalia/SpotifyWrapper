@@ -19,8 +19,11 @@ class Wrap(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     theme = models.CharField(max_length=10, choices=THEME_CHOICES, default='default')
 
+    class Meta:
+        unique_together = ('user', 'name')
+
     def __str__(self):
-        return f"{self.user.username}'s {self.year} Wrap"
+        return f"{self.user.username}'s Wrap: {self.name} (Created: {self.created_at.strftime('%Y-%m-%d')})"
 
 
 class SpotifyToken(models.Model):
@@ -94,58 +97,48 @@ class TopSong(models.Model):
 
 
 class DuoWrap(models.Model):
-    """
-    Enhanced model to store a wrap comparison between two users for a specific year.
-
-    Attributes:
-        user1 (ForeignKey): First user in the comparison.
-        user2 (ForeignKey): Second user in the comparison.
-        year (IntegerField): The year of the duo wrap.
-        created_at (DateTimeField): Timestamp for when the duo wrap was created.
-    """
-    user1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='duo_wrap_user1')
-    user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='duo_wrap_user2')
-    year = models.IntegerField(default=timezone.now().year)
+    user1 = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name='duo_wrap_user1'
+    )
+    user2 = models.ForeignKey(
+        get_user_model(), on_delete=models.CASCADE, related_name='duo_wrap_user2'
+    )
+    wrap_name = models.CharField(max_length=100, default="Default Wrap")
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     top_artists_comparison = models.JSONField(null=True, blank=True, default=dict)
     top_songs_comparison = models.JSONField(null=True, blank=True, default=dict)
     top_genre_comparison = models.JSONField(null=True, blank=True, default=dict)
     minutes_listened_comparison = models.JSONField(null=True, blank=True, default=dict)
-    updated_at = models.DateTimeField(auto_now=True)
+
     class Meta:
-        unique_together = ['user1', 'user2', 'year']
+        unique_together = ('user1', 'user2', 'wrap_name')
 
     def __str__(self):
-        return f"Duo Wrap: {self.user1.username} & {self.user2.username} ({self.year})"
+        return f"Duo Wrap: {self.user1.username} & {self.user2.username} ({self.wrap_name})"
 
     def get_top_artists_comparison(self):
         """
         Retrieve and compare top artists for both users.
 
         Returns:
-            list: List of dictionaries containing artist comparison details.
+            dict: Dictionaries containing artist comparison details.
         """
-        user1_wrap = Wrap.objects.get(user=self.user1, year=self.year)
-        user2_wrap = Wrap.objects.get(user=self.user2, year=self.year)
+        user1_wrap = Wrap.objects.get(user=self.user1, name=self.wrap_name)
+        user2_wrap = Wrap.objects.get(user=self.user2, name=self.wrap_name)
 
         user1_artists = user1_wrap.top_artists.all()
         user2_artists = user2_wrap.top_artists.all()
 
         return {
             'user1_top_artists': [
-                {
-                    'name': artist.name,
-                    'rank': artist.rank,
-                    'image_url': artist.image_url
-                } for artist in user1_artists
+                {'name': artist.name, 'rank': artist.rank, 'image_url': artist.image_url}
+                for artist in user1_artists
             ],
             'user2_top_artists': [
-                {
-                    'name': artist.name,
-                    'rank': artist.rank,
-                    'image_url': artist.image_url
-                } for artist in user2_artists
-            ]
+                {'name': artist.name, 'rank': artist.rank, 'image_url': artist.image_url}
+                for artist in user2_artists
+            ],
         }
 
     def get_top_songs_comparison(self):
@@ -153,31 +146,23 @@ class DuoWrap(models.Model):
         Retrieve and compare top songs for both users.
 
         Returns:
-            list: List of dictionaries containing song comparison details.
+            dict: Dictionaries containing song comparison details.
         """
-        user1_wrap = Wrap.objects.get(user=self.user1, year=self.year)
-        user2_wrap = Wrap.objects.get(user=self.user2, year=self.year)
+        user1_wrap = Wrap.objects.get(user=self.user1, name=self.wrap_name)
+        user2_wrap = Wrap.objects.get(user=self.user2, name=self.wrap_name)
 
         user1_songs = user1_wrap.top_songs.all()
         user2_songs = user2_wrap.top_songs.all()
 
         return {
             'user1_top_songs': [
-                {
-                    'title': song.title,
-                    'artist': song.artist,
-                    'rank': song.rank,
-                    'image_url': song.image_url
-                } for song in user1_songs
+                {'title': song.title, 'artist': song.artist, 'rank': song.rank, 'image_url': song.image_url}
+                for song in user1_songs
             ],
             'user2_top_songs': [
-                {
-                    'title': song.title,
-                    'artist': song.artist,
-                    'rank': song.rank,
-                    'image_url': song.image_url
-                } for song in user2_songs
-            ]
+                {'title': song.title, 'artist': song.artist, 'rank': song.rank, 'image_url': song.image_url}
+                for song in user2_songs
+            ],
         }
 
     def get_details(self):
@@ -187,19 +172,17 @@ class DuoWrap(models.Model):
         Returns:
             dict: Dictionary containing all comparison details.
         """
-        user1_wrap = Wrap.objects.get(user=self.user1, year=self.year)
-        user2_wrap = Wrap.objects.get(user=self.user2, year=self.year)
-
         return {
             'user1': self.user1,
             'user2': self.user2,
-            'year': self.year,
-            'user1_minutes_listened': user1_wrap.minutes_listened,
-            'user2_minutes_listened': user2_wrap.minutes_listened,
-            'user1_top_genre': user1_wrap.top_genre,
-            'user2_top_genre': user2_wrap.top_genre,
-            **self.get_top_artists_comparison(),
-            **self.get_top_songs_comparison()
+            'user1_top_artists': self.top_artists_comparison.get('user1', []),
+            'user2_top_artists': self.top_artists_comparison.get('user2', []),
+            'user1_top_songs': self.top_songs_comparison.get('user1', []),
+            'user2_top_songs': self.top_songs_comparison.get('user2', []),
+            'user1_top_genre': self.top_genre_comparison.get('user1', 'Unknown'),
+            'user2_top_genre': self.top_genre_comparison.get('user2', 'Unknown'),
+            'user1_minutes_listened': self.minutes_listened_comparison.get('user1', 0),
+            'user2_minutes_listened': self.minutes_listened_comparison.get('user2', 0),
         }
 
 

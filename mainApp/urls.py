@@ -16,4 +16,5 @@ urlpatterns = [
     path('wrap/<int:wrap_id>/delete/', views.delete_wrap, name='wrap_delete'),
     path('contact/', views.contact_view, name='contact'),  # New contact page URL
     path('act_on_friend_request/<int:invite_id>/<str:accepted>/', views.act_on_friend_request, name='act_on_friend_request'),
+    path('duo_wrap/delete/<int:duo_wrap_id>/', views.delete_duo_wrap, name='duo_wrap_delete'),
 ]

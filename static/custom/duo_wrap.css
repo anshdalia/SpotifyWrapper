@@ -30,6 +30,7 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
+    height: 80vh;
 }
 
 .title {
@@ -151,6 +152,7 @@
 }
 
 .navigation-container {
+    position: fixed;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -158,6 +160,7 @@
     background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     margin-top: 1rem;
+    z-index: 20;
 }
 
 .nav-buttons {
@@ -189,6 +192,7 @@
     padding: 0;
     overflow: hidden;
     position: relative;
+    pointer-events: auto; /* Ensure interaction is possible */
 }
 
 .genre-slide .comparison-container {
@@ -255,7 +259,8 @@
     font-weight: bold;
     color: rgba(255,255,255,0.2);
     text-transform: uppercase;
-    z-index: 1;
+    z-index: 1; /* Reduced z-index */
+    pointer-events: none; /* Prevent blocking interactions */
     animation: scaleVersus 1s 0.7s forwards;
 }
 
@@ -265,8 +270,8 @@
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none;
-    z-index: 5;
+    pointer-events: none; /* Prevent blocking interactions */
+    z-index: 1; /* Reduced z-index */
     background: linear-gradient(
         45deg,
         rgba(255,0,0,0.2) 0%,
@@ -292,7 +297,8 @@
     );
     animation: lightning-effect 2s infinite alternate,
                fadeInLightning 1s 0.5s forwards;
-    z-index: 2;
+    z-index: 1; /* Reduced z-index */
+    pointer-events: none; /* Prevent blocking interactions */
     opacity: 0;
 }
 
@@ -316,13 +322,15 @@
     transform: scale(1.05);
 }
 
+
 /* Transition Slide Styles for Duo Wrap */
 .transition-slide {
     background-color: rgba(0,0,0,0.8);
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 80vh;
+    position: relative;  /* Add this */
 }
 
 .transition-graphic {
@@ -331,11 +339,12 @@
     stroke: white;
     fill: none;
     stroke-width: 2;
+    margin-bottom: 1rem;
 }
 
 .transition-text {
-    position: absolute;
-    bottom: 20%;
+    position: static; /* Remove absolute positioning */
+    transform: none; /* Remove translateY */
     font-size: 1.5rem;
     color: white;
     text-align: center;
@@ -353,6 +362,43 @@
 
 .transition-graphic.bounce {
     animation: bounce 1s ease infinite;
+}
+
+.minutes-slide .slide-content {
+    height: 80vh;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.minutes-slide .comparison-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4rem;
+    margin-bottom: 2rem;
+}
+
+.minutes-slide .comparison-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    border-radius: 15px;
+    min-width: 250px;
+}
+
+.minutes-slide .comparison-item h3 {
+    margin-bottom: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.minutes-slide .highlight {
+    font-size: 3rem;
+    font-weight: bold;
 }
 
 @keyframes pulse {

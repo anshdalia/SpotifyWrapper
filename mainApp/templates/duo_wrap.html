@@ -13,9 +13,9 @@
     <div class="carousel-container">
         <!-- Welcome Slide -->
         <div class="carousel-slide welcome-slide active">
-            <div class="slide-content">
-                <div class="title animate__animated animate__fadeInUp">Your {{ year }} Duo Wrapped</div>
-                <div class="subtitle animate__animated animate__fadeInUp">{{ user1.username }} & {{ user2.username }}'s Musical Journey</div>
+            <div class="slide-content" style="height: 100vh; justify-content: flex-start; margin-top: 20vh;">
+                <div class="title animate__animated animate__fadeInUp">Your {{ duo_wrap.wrap_name }}</div>
+                <div class="subtitle animate__animated animate__fadeInUp">{{ duo_wrap.user1.username }} & {{ duo_wrap.user2.username }}'s Musical Journey</div>
                 <div class="highlight animate__animated animate__zoomIn">Ready to explore?</div>
             </div>
         </div>
@@ -32,16 +32,17 @@
             </div>
         </div>
 
+
         <div class="carousel-slide artists-slide">
             <div class="slide-content">
                 <div class="title">Top Artists</div>
                 <div class="comparison-container">
                     <div class="comparison-item">
-                        <h3>{{ user1.username }}'s Top Artists</h3>
+                        <h3>{{ duo_wrap.user1.username }}'s Top Artists</h3>
                         <ul class="top-list">
-                            {% for artist in user1_top_artists %}
+                            {% for artist in duo_wrap.top_artists_comparison.user1 %}
                             <li class="top-item animate__animated animate__fadeInLeft">
-                                <span class="item-rank">{{ artist.rank }}</span>
+                                <span class="item-rank">{{ forloop.counter }}</span>
                                 <img class="item-image" src="{{ artist.image_url|default:'/api/placeholder/60/60' }}" alt="{{ artist.name }}">
                                 <div class="item-details">
                                     <p class="item-name">{{ artist.name }}</p>
@@ -51,11 +52,11 @@
                         </ul>
                     </div>
                     <div class="comparison-item">
-                        <h3>{{ user2.username }}'s Top Artists</h3>
+                        <h3>{{ duo_wrap.user2.username }}'s Top Artists</h3>
                         <ul class="top-list">
-                            {% for artist in user2_top_artists %}
+                            {% for artist in duo_wrap.top_artists_comparison.user2 %}
                             <li class="top-item animate__animated animate__fadeInRight">
-                                <span class="item-rank">{{ artist.rank }}</span>
+                                <span class="item-rank">{{ forloop.counter }}</span>
                                 <img class="item-image" src="{{ artist.image_url|default:'/api/placeholder/60/60' }}" alt="{{ artist.name }}">
                                 <div class="item-details">
                                     <p class="item-name">{{ artist.name }}</p>
@@ -88,11 +89,11 @@
                 <div class="title">Top Songs</div>
                 <div class="comparison-container">
                     <div class="comparison-item">
-                        <h3>{{ user1.username }}'s Top Songs</h3>
+                        <h3>{{ duo_wrap.user1.username }}'s Top Songs</h3>
                         <ul class="top-list">
-                            {% for song in user1_top_songs %}
+                            {% for song in duo_wrap.top_songs_comparison.user1 %}
                             <li class="top-item animate__animated animate__fadeInLeft">
-                                <span class="item-rank">{{ song.rank }}</span>
+                                <span class="item-rank">{{ forloop.counter }}</span>
                                 <img class="item-image" src="{{ song.image_url|default:'/api/placeholder/60/60' }}" alt="{{ song.title }}">
                                 <div class="item-details">
                                     <p class="item-name">{{ song.title }}</p>
@@ -103,11 +104,11 @@
                         </ul>
                     </div>
                     <div class="comparison-item">
-                        <h3>{{ user2.username }}'s Top Songs</h3>
+                        <h3>{{ duo_wrap.user2.username }}'s Top Songs</h3>
                         <ul class="top-list">
-                            {% for song in user2_top_songs %}
+                            {% for song in duo_wrap.top_songs_comparison.user2 %}
                             <li class="top-item animate__animated animate__fadeInRight">
-                                <span class="item-rank">{{ song.rank }}</span>
+                                <span class="item-rank">{{ forloop.counter }}</span>
                                 <img class="item-image" src="{{ song.image_url|default:'/api/placeholder/60/60' }}" alt="{{ song.title }}">
                                 <div class="item-details">
                                     <p class="item-name">{{ song.title }}</p>
@@ -138,19 +139,18 @@
             <div class="slide-content">
                 <div class="versus-divider">VS</div>
                 <div class="genre-clash-overlay"></div>
-                <div class="genre-lightning"></div>
                 <div class="comparison-container">
                     <div class="comparison-item">
                         <img class="genre-image animate__animated animate__zoomIn"
                              src="{{ user1_genre_image_url|default:'/api/placeholder/200/200' }}">
-                        <div class="highlight">{{ user1.username }}'s Top Genre</div>
-                        <div class="subtitle">{{ user1_top_genre }}</div>
+                        <div class="highlight">{{ duo_wrap.user1.username }}'s Top Genre</div>
+                        <div class="subtitle">{{ duo_wrap.top_genre_comparison.user1 }}</div>
                     </div>
                     <div class="comparison-item">
                         <img class="genre-image animate__animated animate__zoomIn"
                              src="{{ user2_genre_image_url|default:'/api/placeholder/200/200' }}">
-                        <div class="highlight">{{ user2.username }}'s Top Genre</div>
-                        <div class="subtitle">{{ user2_top_genre }}</div>
+                        <div class="highlight">{{ duo_wrap.user2.username }}'s Top Genre</div>
+                        <div class="subtitle">{{ duo_wrap.top_genre_comparison.user2 }}</div>
                     </div>
                 </div>
             </div>
@@ -175,17 +175,18 @@
                 <div class="title">Minutes Listened</div>
                 <div class="comparison-container">
                     <div class="comparison-item">
-                        <h3>{{ user1.username }}'s Listening Time</h3>
-                        <div class="highlight animate__animated animate__zoomIn">{{ user1_minutes_listened }} minutes</div>
+                        <h3>{{ duo_wrap.user1.username }}'s Listening Time</h3>
+                        <div class="highlight animate__animated animate__zoomIn">{{ duo_wrap.minutes_listened_comparison.user1 }} minutes</div>
                     </div>
                     <div class="comparison-item">
-                        <h3>{{ user2.username }}'s Listening Time</h3>
-                        <div class="highlight animate__animated animate__zoomIn">{{ user2_minutes_listened }} minutes</div>
+                        <h3>{{ duo_wrap.user2.username }}'s Listening Time</h3>
+                        <div class="highlight animate__animated animate__zoomIn">{{ duo_wrap.minutes_listened_comparison.user2 }} minutes</div>
                     </div>
                 </div>
                 <div class="subtitle animate__animated animate__fadeInUp">See how your listening compares!</div>
             </div>
         </div>
+
 
         <!-- Navigation -->
         <div class="navigation-container">

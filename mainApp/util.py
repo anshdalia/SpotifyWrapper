@@ -345,6 +345,23 @@ def create_wrap_for_user(user, name):
 
     return wrap
 
+def fetch_duo_wrap_data(user):
+    """
+    Fetches fresh Spotify data for a user to populate a Duo Wrap.
+
+    Args:
+        user (User): The user whose data is fetched.
+
+    Returns:
+        dict: A dictionary containing the user's top genre, top artists, top songs, and minutes listened.
+    """
+    return {
+        'top_genre': fetch_top_genre(user),
+        'top_artists': fetch_top_artists(user),
+        'top_songs': fetch_top_songs(user),
+        'minutes_listened': fetch_minutes_listened(user)
+    }
+
 
 ############ OLD CREATE WRAP METHOD ############
 # def create_wrap_for_user(user):
