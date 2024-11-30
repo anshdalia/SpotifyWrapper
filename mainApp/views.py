@@ -168,11 +168,12 @@ def single_wrap_view(request, wrap_id=None):
         HttpResponse: Rendered wrap page with top artists and top songs.
     """
     wrap = get_object_or_404(Wrap, id=wrap_id, user=request.user)
-
+    all_too_well_times = int(wrap.minutes_listened / 10)
     context = {
         'wrap': wrap,
         'top_artists': wrap.top_artists.all(),
         'top_songs': wrap.top_songs.all(),
+        'all_too_well_times': all_too_well_times,
     }
     return render(request, 'single_wrap.html', context)
 
