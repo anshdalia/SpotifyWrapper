@@ -118,11 +118,11 @@
                         <path d="M50 50 L70 50" stroke="white" stroke-width="4" fill="none"/>
                         <circle cx="50" cy="50" r="5" fill="white"/>
                     </svg>
-                    <div class="transition-text">Here are some song recommendations</div>
+                    <div class="transition-text">Get ready for your minutes listened!</div>
                 </div>
             </div>
 
-            <!-- Song Recommendations Slide -->
+            <!-- Song Recommendations Slide
             <div class="carousel-slide minutes-slide">
                 <div class="slide-content">
                     <div class="title">Your Song Recommendations</div>
@@ -139,18 +139,18 @@
                         {% endfor %}
                     </ul>
                 </div>
-            </div>
+            </div>-->
         
         
         
-            <!-- Minutes Listened Slide
+            <!-- Minutes Listened Slide -->
             <div class="carousel-slide minutes-slide">
                 <div class="slide-content">
                     <div class="title">Minutes Listened</div>
                     <div class="highlight animate__animated animate__zoomIn">{{ wrap.minutes_listened }}</div>
-                    <div class="subtitle">That's like listening to "All Too Well (10 Minute Version)" {{ wrap.minutes_listened|default:0|divisibleby:10 }} times!</div>
+                    <div class="subtitle">That's like listening to "All Too Well (10 Minute Version)" {{ all_too_well_times }} times!</div>
                 </div>
-            </div>-->
+            </div>
 
             <div class="share-container">
                 <h3>Share Your Wrapped</h3>

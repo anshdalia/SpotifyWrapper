@@ -118,7 +118,7 @@ def make_spotify_request(user, endpoint, params):
     print(url)
     response = requests.get(url, headers=headers, params=params)
     print(response.status_code)
-    if response.status_code == 401 or response.status_code == 403:
+    if response.status_code == 401 or response.status_code == 403 or response.status_code == 404:
         refresh_spotify_token(token)
         newToken = get_user_tokens(user)
         print(f"New access token: {newToken.access_token}")
@@ -139,9 +139,9 @@ def get_recommendations(user1, user2):
 
     # Will find recommendations for 2 users if a second user is specified
     if user2:
-        top_genres = top_genres + ", " + fetch_top_genre(user2)
+        top_genres = {top_genres, fetch_top_genre(user2)}
 
-    print("fetching song recommendations")
+    print(f"fetching song recommendations with genre: " + top_genres)
     data = make_spotify_request(user1, "/recommendations", params={"limit": 10, "seed_genres": top_genres})
 
     if not data:
@@ -198,7 +198,7 @@ def get_recently_played_tracks(user):
 
 
 
-#TODO NOTICE: THIS METHOD DOES NOT WORK AS INTENDED
+#NOTICE: THIS METHOD DOES NOT WORK AS INTENDED
 def fetch_minutes_listened(user):
     """
     Calculates the total minutes listened by the user from their recently played tracks.
@@ -329,18 +329,20 @@ def create_wrap_for_user(user, name):
     top_genre = fetch_top_genre(user)
     top_artists = fetch_top_artists(user)
     top_songs = fetch_top_songs(user)
-    song_recommendations = get_recommendations(user, None)
+    minutes_listened = fetch_minutes_listened(user)
+    #song_recommendations = get_recommendations(user, None)
 
     print(f"{'Creating' if created else 'Updating'} wrap for {user}")
     print(f"Top Genre: {top_genre}")
     print(f"Top Artists: {top_artists}")
     print(f"Top Songs: {top_songs}")
-    print(f"Top Songs: {song_recommendations}")
+    print(f"Minutes Listened: {minutes_listened}")
 
     wrap.top_genre = top_genre
     wrap.top_artistsJSON = top_artists
     wrap.top_songsJSON = top_songs
-    wrap.song_recommendationsJSON = song_recommendations
+    wrap.minutes_listened = minutes_listened
+    #wrap.song_recommendationsJSON = song_recommendations DEPRECATED
     wrap.save()
 
     return wrap
