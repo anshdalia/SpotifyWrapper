@@ -6,6 +6,8 @@
     <title>Your {{ wrap.year }} Wrapped</title>
     {% load static %}
     {% load wrap_filters %}
+
+    <script src="{% static 'js/genre-image-generator.js' %}"></script>
     <!-- Import Font Awesome for icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
@@ -103,7 +105,10 @@
             <div class="carousel-slide genre-slide">
                 <div class="slide-content">
                     <div class="title">Your Top Genre</div>
-                    <img class="genre-image animate__animated animate__zoomIn" src="/api/placeholder/200/200" alt="{{ wrap.top_genre }}">
+                    <img class="genre-image animate__animated animate__zoomIn"
+                         src="/api/placeholder/200/200"
+                         alt="{{ wrap.top_genre }}"
+                         id="genre-image-placeholder">
                     <div class="highlight animate__animated animate__fadeInUp">{{ wrap.top_genre }}</div>
                     <div class="subtitle animate__animated animate__fadeInUp">You've got great taste in music!</div>
                 </div>
@@ -216,6 +221,11 @@
             const shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${text}`;
             window.open(shareUrl, '_blank');
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const genre = "{{ wrap.top_genre }}";
+            replaceGenreImage(genre);
+        });
     </script>
 </body>
 </html>

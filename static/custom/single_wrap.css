@@ -43,7 +43,7 @@ body {
     width: 100%;
     max-width: 600px;
     margin: auto;
-    padding-bottom: 120px; /* Space for navigation */
+    padding-bottom: 60px; /* Space for navigation */
 }
 
 .carousel-slide.active {
@@ -141,6 +141,14 @@ body {
     border-radius: 50%;
     margin: 2rem 0;
     object-fit: cover;
+}
+
+.genre-slide .highlight {
+    font-size: 4rem;
+    font-weight: 900;
+    margin: 2rem 0;
+    text-transform: capitalize; /* Capitalizes the first letter of each word */
+    color: white; /* Ensure visibility */
 }
 
 .transition-graphic {
