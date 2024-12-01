@@ -222,7 +222,7 @@
     authenticateSpotify();
     
     var profile = fetchProfile("{{ spotify_token.access_token }}");
-    console.log("Access token passed to fetchProfile:", "{{ spotify_token.access_token }}"); // Debug: print token in console
+    //console.log("Access token passed to fetchProfile:", "{{ spotify_token.access_token }}"); // Debug: print token in console
 
     function deleteWrap(wrapId) {
         if (confirm("Are you sure you want to delete this wrap?")) {

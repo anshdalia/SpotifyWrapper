@@ -6,7 +6,7 @@ var is_authenticated;
 function authenticateSpotify() {
     fetch('/is-authenticated').then((response) => response.json()).then((data) => {
         is_authenticated = data.status;
-        console.log("Is user authenticated:", data.status); // Debug, true if authenticated
+        //console.log("Is user authenticated:", data.status); // Debug, true if authenticated
         if (!data.status) {
             fetch('/get-auth-url').then((response) => response.json()).then((data) => {
                 window.location.replace(data.url);
@@ -24,7 +24,7 @@ function authenticateSpotify() {
 
 async function fetchProfile(token) {
     try {
-        console.log("Token received in fetchProfile:", token); // Debug: Check token received
+        //console.log("Token received in fetchProfile:", token); // Debug: Check token received
 
         const result = await fetch("https://api.spotify.com/v1/me", {
             method: "GET",
@@ -49,12 +49,12 @@ async function fetchProfile(token) {
 
         // Parse the profile data
         const profile = await result.json();
-        console.log("Profile data received:", profile); // Debug: print profile data
+        //console.log("Profile data received:", profile); // Debug: print profile data
 
         document.getElementById("displayName").innerText = profile.display_name || "No display name found";
         return profile;
     } catch (error) {
-        console.error("Error fetching profile:", error); // Debug: log fetch error
+        //console.error("Error fetching profile:", error); // Debug: log fetch error
     }
 }
 
