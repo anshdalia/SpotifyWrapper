@@ -141,8 +141,11 @@
                             <a href="{% url 'single_wrap_view' wrap.id %}">{{ wrap.name }}</a>
                         </div>
                         <!-- Date Created -->
-                        <div class="col col-6">
+                        <div class="col col-4">
                             Date Created: {{ wrap.created_at|date:"m/d/Y" }}
+                        </div>
+                        <div class="col col-2">
+                            Type: {{ wrap.term_type }} term
                         </div>
                         <!-- Delete Button -->
                         <div class="col col-2 text-end">
