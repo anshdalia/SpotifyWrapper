@@ -112,7 +112,7 @@ function findBestGenreMatch(genre) {
     return 'default';
 }
 
-function generateGenreImage(genre) {
+function generateGenreImage(genre, uniqueId) {
     // Capitalize the genre text
     const capitalizedGenre = capitalizeGenre(genre);
 
@@ -127,20 +127,23 @@ function generateGenreImage(genre) {
     svg.setAttribute("height", "200");
     svg.classList.add("genre-image", "animate__animated", "animate__zoomIn");
 
-    // Gradient definition
+    // Gradient definition with a unique ID
+    const gradientId = `genreGradient-${uniqueId}`;
     const gradientEl = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
-    gradientEl.setAttribute("id", "genreGradient");
+    gradientEl.setAttribute("id", gradientId);
     gradientEl.innerHTML = `
         <stop offset="0%" stop-color="${genreConfig.gradient[0]}"/>
         <stop offset="100%" stop-color="${genreConfig.gradient[1]}"/>
     `;
-    svg.appendChild(gradientEl);
+    const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+    defs.appendChild(gradientEl);
+    svg.appendChild(defs);
 
-    // Background rectangle
+    // Background rectangle using the unique gradient ID
     const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     bgRect.setAttribute("width", "200");
     bgRect.setAttribute("height", "200");
-    bgRect.setAttribute("fill", "url(#genreGradient)");
+    bgRect.setAttribute("fill", `url(#${gradientId})`);
     svg.appendChild(bgRect);
 
     // Decorative circles

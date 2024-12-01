@@ -235,22 +235,22 @@
             if (e.key === 'ArrowRight') nextSlide();
             if (e.key === 'ArrowLeft') previousSlide();
         });
+        // Updated code to replace genre images with unique gradients
         document.addEventListener('DOMContentLoaded', () => {
-            // Use the genre image generation function from the previous artifact
             const user1Genre = "{{ duo_wrap.top_genre_comparison.user1 }}";
             const user2Genre = "{{ duo_wrap.top_genre_comparison.user2 }}";
 
             // Replace user1 genre image
             const user1Placeholder = document.getElementById('user1-genre-image-placeholder');
             if (user1Placeholder) {
-                const user1Svg = generateGenreImage(user1Genre);
+                const user1Svg = generateGenreImage(user1Genre, 'user1');
                 user1Placeholder.parentNode.replaceChild(user1Svg, user1Placeholder);
             }
 
             // Replace user2 genre image
             const user2Placeholder = document.getElementById('user2-genre-image-placeholder');
             if (user2Placeholder) {
-                const user2Svg = generateGenreImage(user2Genre);
+                const user2Svg = generateGenreImage(user2Genre, 'user2');
                 user2Placeholder.parentNode.replaceChild(user2Svg, user2Placeholder);
             }
         });
