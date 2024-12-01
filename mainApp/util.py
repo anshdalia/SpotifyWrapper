@@ -199,102 +199,89 @@ def get_recently_played_tracks(user):
 
 
 #NOTICE: THIS METHOD DOES NOT WORK AS INTENDED
-def fetch_minutes_listened(user):
+def fetch_minutes_listened(user, time_range='medium_term'):
     """
-    Calculates the total minutes listened by the user from their recently played tracks.
+    Estimates total minutes listened by summing up the duration of the user's top tracks.
 
     Args:
-        user (User): The user for whom the minutes listened are calculated.
+        user (User): The user whose minutes listened are estimated.
+        time_range (str): The Spotify API's time range ('short_term', 'medium_term', 'long_term').
 
     Returns:
-        int: The total minutes listened.
+        int: The estimated total minutes listened.
     """
-
-
-    print("fetching minutes listened")
-    data = make_spotify_request(user, "/me/player/recently-played", params={"limit": 50})
-
+    data = make_spotify_request(user, "/me/top/tracks", params={"time_range": time_range, "limit": 50})
     if not data:
         return 0
 
-    total_ms = sum([item['track']['duration_ms'] for item in data['items']])
-    total_minutes = total_ms / (1000 * 60)
+    total_ms = sum([track['duration_ms'] for track in data['items']])
+    total_minutes = total_ms / (1000 * 60)  # Convert milliseconds to minutes
     return int(total_minutes)
 
 
-def fetch_top_genre(user):
+
+def fetch_top_genre(user, time_range='medium_term'):
     """
-    Retrieves the top genre for the user based on their top artists.
+    Fetches the user's top genre based on the specified time range.
 
     Args:
         user (User): The user whose top genre is fetched.
+        time_range (str): The Spotify API's time range ('short_term', 'medium_term', 'long_term').
 
     Returns:
-        str: The most frequent genre among the user's top artists.
+        str: The user's most frequently occurring genre.
     """
-    print("fetching top genre")
-    data = make_spotify_request(user, "/me/top/artists", params={"time_range": "medium_term", "limit": 25})
-
-
+    data = make_spotify_request(user, "/me/top/artists", params={"time_range": time_range, "limit": 25})
     if not data:
-        print("no top genre found.")
         return "Unknown"
-    print(data)
+
     genre_count = {}
     for artist in data['items']:
         for genre in artist['genres']:
             genre_count[genre] = genre_count.get(genre, 0) + 1
 
+    return max(genre_count, key=genre_count.get) if genre_count else "Unknown"
 
-    top_genre = max(genre_count, key=genre_count.get)
-    print(top_genre)
-
-    return top_genre
-
-def fetch_top_artists(user):
+def fetch_top_artists(user, time_range='medium_term'):
     """
-    Retrieves the user's top artists.
+    Fetches the user's top artists based on the specified time range.
 
     Args:
-        user (User): The user whose top artists are retrieved.
+        user (User): The user whose top artists are fetched.
+        time_range (str): The Spotify API's time range ('short_term', 'medium_term', 'long_term').
 
     Returns:
-        list: A list of top artists with their name and image URL.
+        list: A list of top artists with names and image URLs.
     """
-    print("fetching top artists")
-    data = make_spotify_request(user, "/me/top/artists", params={"time_range": "medium_term", "limit": 10})
-    print(data)
+    data = make_spotify_request(user, "/me/top/artists", params={"time_range": time_range, "limit": 10})
     if not data:
-        print("No top artists found.")
         return []
 
-    top_artists = [
+    return [
         {
             "name": artist['name'],
             "image_url": artist['images'][0]['url'] if artist['images'] else ""
         }
         for artist in data['items']
     ]
-    return top_artists
 
-def fetch_top_songs(user):
+
+def fetch_top_songs(user, time_range='medium_term'):
     """
-    Retrieves the user's top songs.
+    Fetches the user's top songs based on the specified time range.
 
     Args:
-        user (User): The user whose top songs are retrieved.
+        user (User): The user whose top songs are fetched.
+        time_range (str): The Spotify API's time range ('short_term', 'medium_term', 'long_term').
 
     Returns:
-        list: A list of top songs with their title, artist, image URL, and preview URL.
+        list: A list of top songs with title, artist, image URL, and preview URL.
     """
-    print("fetching top songs")
-    data = make_spotify_request(user, "/me/top/tracks", params={"time_range": "medium_term", "limit": 10})
-
+    data = make_spotify_request(user, "/me/top/tracks", params={"time_range": time_range, "limit": 10})
     if not data:
-        print("No top songs found.")
         return []
-    print(data)
-    top_songs = [
+
+    return [
         {
             "title": song['name'],
             "artist": ", ".join([artist['name'] for artist in song['artists']]),
@@ -303,7 +290,6 @@ def fetch_top_songs(user):
         }
         for song in data['items']
     ]
-    return top_songs
 
 def get_top_items(user, item_type='tracks', time_range='medium_term', limit=10):
     """
@@ -323,29 +309,27 @@ def get_top_items(user, item_type='tracks', time_range='medium_term', limit=10):
     data = make_spotify_request(user, endpoint, params)
     return data.get("items", []) if data else []
 
-def create_wrap_for_user(user, name):
-    wrap, created = Wrap.objects.get_or_create(user=user, name=name)
+def create_wrap_for_user(user, name, term_type):
+    # Ensure the Wrap includes term_type as part of the unique combination
+    wrap, created = Wrap.objects.get_or_create(user=user, name=name, term_type=term_type)
 
-    top_genre = fetch_top_genre(user)
-    top_artists = fetch_top_artists(user)
-    top_songs = fetch_top_songs(user)
-    minutes_listened = fetch_minutes_listened(user)
-    #song_recommendations = get_recommendations(user, None)
+    # Fetch Spotify data based on the term type
+    time_range = 'short_term' if term_type == 'short' else 'medium_term' if term_type == 'medium' else 'long_term'
 
-    print(f"{'Creating' if created else 'Updating'} wrap for {user}")
-    print(f"Top Genre: {top_genre}")
-    print(f"Top Artists: {top_artists}")
-    print(f"Top Songs: {top_songs}")
-    print(f"Minutes Listened: {minutes_listened}")
+    top_genre = fetch_top_genre(user, time_range)
+    top_artists = fetch_top_artists(user, time_range)
+    top_songs = fetch_top_songs(user, time_range)
+    minutes_listened = fetch_minutes_listened(user, time_range)
 
+    # Save fetched data to the Wrap instance
     wrap.top_genre = top_genre
     wrap.top_artistsJSON = top_artists
     wrap.top_songsJSON = top_songs
     wrap.minutes_listened = minutes_listened
-    #wrap.song_recommendationsJSON = song_recommendations DEPRECATED
     wrap.save()
 
     return wrap
+
 
 def fetch_duo_wrap_data(user):
     """
@@ -363,6 +347,35 @@ def fetch_duo_wrap_data(user):
         'top_songs': fetch_top_songs(user),
         'minutes_listened': fetch_minutes_listened(user)
     }
+def get_public_playlists(user_token, user_id):
+    """
+    Fetches public playlists for a specific Spotify user.
+
+    Args:
+        user_token (str): The Spotify access token.
+        user_id (str): The Spotify user ID.
+
+    Returns:
+        list: A list of public playlists, or an empty list if no playlists are found.
+    """
+    url = f"https://api.spotify.com/v1/users/{user_id}/playlists"
+    headers = {
+        "Authorization": f"Bearer {user_token}"
+    }
+
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()  # Raise an exception for HTTP errors
+
+        data = response.json()
+        if "items" in data and data["items"] is not None:
+            return data["items"]  # Return the playlists
+        else:
+            return []  # Return an empty list if no items are found
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching public playlists: {e}")
+        return []  # Return an empty list in case of an error
 
 
 ############ OLD CREATE WRAP METHOD ############

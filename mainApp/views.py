@@ -1,3 +1,4 @@
+import json
 from django.db.models import Model
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -12,7 +13,7 @@ from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
 
 from . import models
-from .forms import InviteFriendForm, SingleWrapNameForm
+from .forms import InviteFriendForm
 from .models import Wrap, DuoWrap_Request
 from django.db import models
 from django.db.models import Q
@@ -22,6 +23,9 @@ from SpotifyWrapper.settings import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, RE
 from .util import *
 from django.contrib import messages
 from datetime import datetime
+from .forms import SingleWrapCreationForm
+from .util import get_public_playlists
+from .models import Playlist
 
 
 # Spotify Authorization URL creation function
@@ -139,22 +143,23 @@ def main_menu(request):
     return render(request, 'main_menu.html', context)
 
 
+@login_required(login_url='user:login')
 def create_new_single_wrap(request):
     if request.method == 'POST':
-        form = SingleWrapNameForm(request.POST)
+        form = SingleWrapCreationForm(request.POST)
         if form.is_valid():
             name = form.cleaned_data['name']
+            term_type = form.cleaned_data['term_type']
 
-            wrap = create_wrap_for_user(request.user, name)
-
+            # Create the wrap based on term type
+            wrap = create_wrap_for_user(request.user, name, term_type)
 
             # Redirect to a success page or another view
             return redirect('single_wrap_view', wrap.id)
     else:
-        form = SingleWrapNameForm()
+        form = SingleWrapCreationForm()
 
     return render(request, 'create_new_single_wrap.html', {'form': form})
-
 @login_required(login_url='user:login')
 def single_wrap_view(request, wrap_id=None):
     """
@@ -176,6 +181,174 @@ def single_wrap_view(request, wrap_id=None):
         'all_too_well_times': all_too_well_times,
     }
     return render(request, 'single_wrap.html', context)
+
+@login_required
+def public_wraps(request):
+    """
+    Displays all public wraps and Spotify playlists with like functionality.
+    """
+    user_wraps = Wrap.objects.filter(user=request.user)
+    public_wraps = Wrap.objects.filter(public=True).exclude(user=request.user)
+    liked_wraps = request.user.liked_wraps.all()
+
+    # Spotify integration
+    spotify_user_id = request.GET.get('spotify_user_id', None)
+    spotify_playlists = []
+    liked_playlists = Playlist.objects.filter(user=request.user)  # Assuming a Playlist model
+
+    if spotify_user_id:
+        user_token = get_user_tokens(request.user).access_token  # Ensure token is valid
+        spotify_playlists = get_public_playlists(user_token, spotify_user_id)
+
+    context = {
+        'user_wraps': user_wraps,
+        'public_wraps': public_wraps,
+        'liked_wraps': liked_wraps,
+        'liked_playlists': liked_playlists,
+        'spotify_playlists': spotify_playlists,
+    }
+    return render(request, 'public_wraps.html', context)
+
+
+@login_required
+def public_wraps_view(request):
+    """
+    Displays the public wraps page.
+    """
+    user_wraps = Wrap.objects.filter(user=request.user)
+    public_wraps = Wrap.objects.filter(public=True).exclude(user=request.user)
+    liked_wraps = request.user.liked_wraps.all()  # Assuming a ManyToMany relationship for likes.
+
+    context = {
+        'user_wraps': user_wraps,
+        'public_wraps': public_wraps,
+        'liked_wraps': liked_wraps
+    }
+    return render(request, 'public_wraps.html', context)
+
+
+@login_required
+@require_http_methods(["POST"])
+def share_wrap(request, wrap_id):
+    """
+    Marks a wrap as public and returns its details for dynamic frontend updates.
+    """
+    try:
+        wrap = Wrap.objects.get(id=wrap_id, user=request.user)
+        wrap.public = True
+        wrap.save()
+        return JsonResponse({
+            'status': 'success',
+            'wrap': {
+                'id': wrap.id,
+                'name': wrap.name,
+                'created_at': wrap.created_at.strftime('%b %d, %Y'),
+                'user': wrap.user.username
+            }
+        })
+    except Wrap.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Wrap not found'}, status=404)
+
+
+
+@login_required
+@require_http_methods(["POST"])
+def like_wrap(request, wrap_id):
+    """
+    Adds a like to a wrap and returns its details for dynamic frontend updates.
+    """
+    try:
+        wrap = Wrap.objects.get(id=wrap_id)
+        wrap.likes.add(request.user)
+        return JsonResponse({
+            'status': 'success',
+            'wrap': {
+                'id': wrap.id,
+                'name': wrap.name,
+                'user': wrap.user.username,
+                'created_at': wrap.created_at.strftime('%b %d, %Y')
+            }
+        })
+    except Wrap.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Wrap not found'}, status=404)
+
+@login_required
+@require_http_methods(["POST"])
+def unlike_wrap(request, wrap_id):
+    """
+    Removes a like from a wrap and returns its ID for frontend updates.
+    """
+    try:
+        wrap = Wrap.objects.get(id=wrap_id)
+        wrap.likes.remove(request.user)
+        return JsonResponse({'status': 'success', 'wrap_id': wrap.id})
+    except Wrap.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Wrap not found'}, status=404)
+
+
+@login_required
+@require_http_methods(["POST"])
+def like_playlist(request):
+    """
+    Handles liking a Spotify playlist and returns playlist details.
+    """
+    try:
+        data = json.loads(request.body)
+        playlist_id = data.get("playlist_id")
+        playlist_name = data.get("playlist_name")
+        playlist_url = data.get("playlist_url")
+
+        if not playlist_id or not playlist_name or not playlist_url:
+            return JsonResponse({"status": "error", "message": "Incomplete playlist data"}, status=400)
+
+        # Create or get the playlist for the current user
+        Playlist.objects.get_or_create(
+            user=request.user,
+            spotify_id=playlist_id,
+            defaults={'name': playlist_name, 'url': playlist_url}
+        )
+
+        return JsonResponse({
+            "status": "success",
+            "playlist": {
+                "name": playlist_name,
+                "url": playlist_url,
+            },
+        })
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+
+
+
+@login_required
+@require_http_methods(["POST"])
+def unshare_wrap(request, wrap_id):
+    """
+    Unshare a wrap by removing its public status.
+    """
+    try:
+        wrap = Wrap.objects.get(id=wrap_id, user=request.user)
+        wrap.public = False
+        wrap.save()
+        return JsonResponse({'status': 'success'})
+    except Wrap.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Wrap not found'}, status=404)
+
+@login_required
+def liked_items_view(request):
+    """
+    Display wraps and Spotify playlists liked by the user.
+    """
+    liked_wraps = request.user.liked_wraps.all()
+    liked_playlists = Playlist.objects.filter(user=request.user)
+
+    context = {
+        'liked_wraps': liked_wraps,
+        'liked_playlists': liked_playlists,
+    }
+    return render(request, 'liked_items.html', context)
+
 
 ############ OLD VIEW ############
 

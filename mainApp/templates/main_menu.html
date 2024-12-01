@@ -50,15 +50,19 @@
             <div class="col col-lg-2">
                 <button onclick="window.location.href='{% url 'create_new_single_wrap' %}'" class="btn btn-secondary">Create a new Wrap</button>
             </div>
-            <div class="col col-lg-2">    
+            <div class="col col-lg-2">
                 <button onclick="window.location.href='{% url 'friend_request' %}'" class="btn btn-secondary">Create a new Duo Wrap</button>
             </div>
-            <div class="col col-lg-1 ms-auto">    
+            <div class="col col-lg-2"> <!-- Add your new button here -->
+                <button onclick="window.location.href='{% url 'public_wraps' %}'" class="btn btn-secondary">View Public Wraps</button>
+            </div>
+            <div class="col col-lg-1 ms-auto">
                 <button onclick="window.location.href='{% url 'user:profile' %}'" class="btn btn-primary">Profile</button>
             </div>
-            <div class="col col-lg-2">    
+            <div class="col col-lg-2">
                 <button onclick="window.location.href='{% url 'contact' %}'" class="btn btn-secondary">Contact</button>
             </div>
+        </div>
             
         </div>
 
@@ -111,27 +115,16 @@
         </ul>
 
         <!-- Spotify Wraps Section -->
-        <h2 class="section-spacing">Your Spotify Wraps</h2>
-        <ul class="list-group list-group-flush">
+        <h2>Your Spotify Wraps</h2>
+        <ul>
             {% for wrap in user_wraps %}
-                <li id="wrap-{{ wrap.id }}" class="list-group-item list-group-item-action">
-                    <div class="row align-items-center">
-                        <div class="col col-3">
-                            <a href="{% url 'wrap_detail' wrap.id %}">{{ wrap.name }}</a>
-                        </div>
-                        <div class="col col-3">
-                            Date Created: {{ wrap.created_at|date:"m/d/Y" }}
-                        </div>
-                        <div class="col col-3">
-                            Made with: {{ wrap.user.username }}
-                        </div>
-                        <div class="col col-3 text-end">
-                            <button class="btn btn-danger btn-sm" onclick="deleteWrap({{ wrap.id }})">Delete</button>
-                        </div>
-                    </div>
+                <li>
+                    <strong>{{ wrap.name }}</strong> ({{ wrap.get_term_type_display }}) - Created on {{ wrap.created_at|date:"M d, Y" }}
+                    <a href="{% url 'single_wrap_view' wrap.id %}">View</a>
+                    <button onclick="deleteWrap({{ wrap.id }})" class="btn btn-danger">Delete</button>
                 </li>
             {% empty %}
-                <li class="list-group-item">No wraps available.</li>
+                <li>No wraps available.</li>
             {% endfor %}
         </ul>
         <h2 class="section-spacing">Your Duo Wraps</h2>

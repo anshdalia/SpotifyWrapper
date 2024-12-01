@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django import forms
 from django.dispatch import receiver
 from django.forms.widgets import TextInput, PasswordInput, EmailInput
-from .models import DuoWrap_Request
+from .models import DuoWrap_Request, Wrap
 
 class InviteFriendForm(forms.ModelForm):
     class Meta:
@@ -49,8 +49,18 @@ class InviteFriendForm(forms.ModelForm):
         return super().save(commit=commit)
 
 
-class SingleWrapNameForm(forms.Form):
-    name = forms.CharField(max_length=255, label="Wrap Name")
+# Updated form to include term_type
+class SingleWrapCreationForm(forms.Form):
+    name = forms.CharField(
+        max_length=255, 
+        label="Wrap Name", 
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    term_type = forms.ChoiceField(
+        choices=Wrap.TERM_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label="Term Type",
+    )
 
 
 class DuoWrapRequestForm(forms.ModelForm):
@@ -85,3 +95,4 @@ class DuoWrapRequestForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+

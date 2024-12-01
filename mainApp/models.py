@@ -10,21 +10,32 @@ class Wrap(models.Model):
         ('halloween', 'Halloween'),
         ('christmas', 'Christmas'),
     ]
+
+    TERM_CHOICES = [
+        ('short', 'Short-Term'),
+        ('medium', 'Medium-Term'),
+        ('long', 'Long-Term'),
+    ]
+
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='wraps')
     name = models.CharField(max_length=100)
+    term_type = models.CharField(max_length=10, choices=TERM_CHOICES, default='short')  # Added for term distinction
     top_artistsJSON = models.JSONField(null=True, blank=True, default=dict)
     top_songsJSON = models.JSONField(null=True, blank=True, default=dict)
-    #song_recommendationsJSON = models.JSONField(null=True, blank=True, default=dict) DEPRECATED
     minutes_listened = models.IntegerField(default=0)
     top_genre = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     theme = models.CharField(max_length=10, choices=THEME_CHOICES, default='default')
 
+    # New fields
+    public = models.BooleanField(default=False)  # For sharing wraps
+    likes = models.ManyToManyField(User, related_name='liked_wraps', blank=True)  # For tracking likes
+
     class Meta:
-        unique_together = ('user', 'name')
+        unique_together = ('user', 'name', 'term_type')  # Updated to include term type
 
     def __str__(self):
-        return f"{self.user.username}'s Wrap: {self.name} (Created: {self.created_at.strftime('%Y-%m-%d')})"
+        return f"{self.user.username}'s Wrap: {self.name} ({self.term_type}) (Created: {self.created_at.strftime('%Y-%m-%d')})"
 
 
 class SpotifyToken(models.Model):
@@ -194,3 +205,12 @@ class DuoWrap_Request(models.Model):
     time_sent = models.DateTimeField(auto_now_add=True)
     request_accepted = models.BooleanField(default=False) #True if receiver accepts request
     request_denied = models.BooleanField(default=False) #True if receiver denies request
+
+class Playlist(models.Model):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name="liked_playlists")
+    spotify_id = models.CharField(max_length=50, unique=True)  # Spotify playlist ID
+    name = models.CharField(max_length=255)  # Playlist name
+    url = models.URLField()  # Spotify playlist URL
+
+    def __str__(self):
+        return f"{self.name} (by {self.user.username})"

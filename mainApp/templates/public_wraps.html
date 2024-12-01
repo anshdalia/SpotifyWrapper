@@ -1,0 +1,331 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Wraps</title>
+    <link rel="stylesheet" href="{% static 'custom/custom.css' %}">
+
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        h1 {
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+
+        .wrap-item, .playlist-item {
+            border: 1px solid #333;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background-color: #2c2c2c;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .wrap-item strong, .playlist-item strong {
+            color: #00ff99;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-secondary {
+            background-color: #444;
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background-color: #555;
+        }
+
+        .btn-primary {
+            background-color: #00bfff;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0099cc;
+        }
+
+        .btn-success {
+            background-color: #00ff99;
+            color: #000;
+        }
+
+        .btn-success:hover {
+            background-color: #00cc77;
+        }
+
+        .btn-danger {
+            background-color: #ff4444;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background-color: #cc3333;
+        }
+
+        .search-bar {
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            padding: 8px;
+            width: 80%;
+            border-radius: 5px;
+            border: 1px solid #333;
+            background-color: #2c2c2c;
+            color: #fff;
+        }
+
+        .search-bar button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            background-color: #00bfff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .search-bar button:hover {
+            background-color: #0099cc;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Your Wraps</h1>
+<ul>
+    {% for wrap in user_wraps %}
+        <li class="wrap-item">
+            <strong>{{ wrap.name }}</strong> ({{ wrap.get_term_type_display }}) - Created on {{ wrap.created_at|date:"M d, Y" }}
+            {% if wrap.public %}
+                <button class="btn btn-danger unshare-button" data-id="{{ wrap.id }}">Unshare</button>
+            {% else %}
+                <button class="btn btn-primary share-button" data-id="{{ wrap.id }}">Share</button>
+            {% endif %}
+        </li>
+    {% empty %}
+        <li>No wraps available.</li>
+    {% endfor %}
+</ul>
+
+
+        <!-- Public Wraps Section -->
+<h1>Public Wraps</h1>
+<ul id="public-wraps-list">
+    {% for wrap in public_wraps %}
+        <li class="wrap-item" data-id="wrap-{{ wrap.id }}">
+            <strong>{{ wrap.name }}</strong> by {{ wrap.user.username }} ({{ wrap.created_at|date:"M d, Y" }})
+            <a href="{% url 'single_wrap_view' wrap.id %}" class="btn btn-secondary">View Wrap</a>
+            <button class="btn btn-success like-button" data-id="{{ wrap.id }}" {% if wrap in liked_wraps %}style="display:none;"{% endif %}>Like</button>
+            <button class="btn btn-danger unlike-button" data-id="{{ wrap.id }}" {% if wrap not in liked_wraps %}style="display:none;"{% endif %}>Unlike</button>
+        </li>
+    {% empty %}
+        
+    {% endfor %}
+</ul>
+
+<!-- Liked Items Section -->
+<h1>Liked Wraps and Playlists</h1>
+<ul id="liked-items-list">
+    {% for wrap in liked_wraps %}
+        <li class="wrap-item">
+            <strong>{{ wrap.name }}</strong> by {{ wrap.user.username }}
+        </li>
+    {% endfor %}
+    {% for playlist in liked_playlists %}
+    <li class="playlist-item">
+        <strong>{{ playlist.name }}</strong>
+        <a href="{{ playlist.url }}" target="_blank">Open Playlist</a>
+    </li>
+    {% endfor %}
+</ul>
+
+
+
+<h1>Public Spotify Playlists</h1>
+<div class="search-bar">
+    <input type="text" id="spotify-user-id" placeholder="Enter Spotify User ID">
+    <button id="search-playlists">Search</button>
+</div>
+<ul id="spotify-playlists-list">
+    {% for playlist in spotify_playlists %}
+        <li class="playlist-item">
+            <!-- Display only the playlist name and the like button -->
+            <strong>{{ playlist.name }}</strong>
+            <button class="btn btn-success like-playlist-button" data-id="{{ playlist.id }}">Like Playlist</button>
+        </li>
+    {% empty %}
+        <li>No public playlists available.</li>
+    {% endfor %}
+</ul>
+
+        <button onclick="window.location.href='{% url 'main_menu' %}'" class="btn btn-secondary">Back to Main Menu</button>
+    </div>
+
+    <script>
+        // Share a wrap
+        document.querySelectorAll('.share-button').forEach(button => {
+    button.addEventListener('click', () => {
+        const wrapId = button.getAttribute('data-id');
+        fetch(`/wrap/${wrapId}/share/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const wrap = data.wrap;
+                    // Add to Public Wraps list dynamically
+                    const publicWrapsList = document.getElementById('public-wraps-list');
+                    publicWrapsList.innerHTML += `
+                        <li class="wrap-item" id="wrap-${wrap.id}">
+                            <strong>${wrap.name}</strong> by ${wrap.user} (${wrap.created_at})
+                            <a href="/wrap/${wrap.id}/view" class="btn btn-secondary">View Wrap</a>
+                            <button class="btn btn-success like-button" data-id="${wrap.id}">Like</button>
+                            <button class="btn btn-danger unlike-button" data-id="${wrap.id}" style="display: none;">Unlike</button>
+                        </li>
+                    `;
+                    alert('Wrap shared successfully!');
+                } else {
+                    alert('Error sharing wrap.');
+                }
+            });
+    });
+});
+// Unshare a wrap
+document.querySelectorAll('.unshare-button').forEach(button => {
+    button.addEventListener('click', () => {
+        const wrapId = button.getAttribute('data-id');
+        fetch(`/wrap/${wrapId}/unshare/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Wrap unshared successfully!');
+                location.reload(); // Refresh the page
+            } else {
+                alert('Error unsharing wrap.');
+            }
+        });
+    });
+});
+
+document.addEventListener('click', (event) => {
+    if (event.target.classList.contains('like-button')) {
+        const wrapId = event.target.getAttribute('data-id');
+        fetch(`/wrap/${wrapId}/like/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const likedItemsList = document.getElementById('liked-items-list');
+                    likedItemsList.innerHTML += `
+                        <li class="wrap-item" data-id="${wrapId}">
+                            <strong>${data.wrap.name}</strong> by ${data.wrap.user}
+                        </li>
+                    `;
+                    event.target.style.display = 'none';
+                    const unlikeButton = document.querySelector(`#wrap-${wrapId} .unlike-button`);
+                    if (unlikeButton) unlikeButton.style.display = 'inline-block';
+                } else {
+                    alert('Error liking wrap.');
+                }
+            });
+    }
+
+    if (event.target.classList.contains('unlike-button')) {
+        const wrapId = event.target.getAttribute('data-id');
+        fetch(`/wrap/${wrapId}/unlike/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const likedItem = document.querySelector(`#liked-items-list li[data-id="${wrapId}"]`);
+                    if (likedItem) likedItem.remove();
+                    event.target.style.display = 'none';
+                    const likeButton = document.querySelector(`#wrap-${wrapId} .like-button`);
+                    if (likeButton) likeButton.style.display = 'inline-block';
+                } else {
+                    alert('Error unliking wrap.');
+                }
+            });
+    }
+});
+
+
+document.querySelectorAll('.like-playlist-button').forEach(button => {
+    button.addEventListener('click', () => {
+        const playlistId = button.getAttribute('data-id');
+        const playlistName = button.parentElement.querySelector('strong').innerText;
+        const playlistUrl = `https://open.spotify.com/playlist/${playlistId}`;
+        fetch(`/spotify/like_playlist/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ playlist_id: playlistId, playlist_name: playlistName, playlist_url: playlistUrl }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const likedItemsList = document.getElementById('liked-items-list');
+                    likedItemsList.innerHTML += `
+                        <li class="playlist-item">
+                            <strong>${data.playlist.name}</strong> 
+                            <a href="${data.playlist.url}" target="_blank">Open Playlist</a>
+                        </li>
+                    `;
+                    alert('Playlist liked successfully!');
+                } else {
+                    alert('Error liking playlist.');
+                }
+            });
+    });
+});
+
+
+        // Fetch playlists based on user input
+        document.getElementById('search-playlists').addEventListener('click', () => {
+            const userId = document.getElementById('spotify-user-id').value;
+            window.location.href = `/public_wraps/?spotify_user_id=${userId}`;
+        });
+    </script>
+</body>
+</html>
