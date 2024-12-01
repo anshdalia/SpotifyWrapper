@@ -482,6 +482,7 @@ def act_on_friend_request(request, invite_id, accepted):
                 # Save the populated DuoWrap
                 duo_wrap.save()
                 messages.success(request, f"Duo Wrap '{wrap_name}' created with {invite.sender.username}!")
+                return redirect('duo_wrap', duo_wrap.id)
         except Exception as e:
             messages.error(request, f"Error creating Duo Wrap: {str(e)}")
             return redirect('friend_request')
