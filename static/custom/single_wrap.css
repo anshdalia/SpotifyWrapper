@@ -13,9 +13,8 @@ body {
 
 .carousel-container {
     width: 100vw;
-    min-height: 100vh;
+    min-height: 100vh; /* Changed from height to min-height */
     position: relative;
-    overflow-y:auto;
 }
 
 .carousel-slide {
@@ -32,7 +31,6 @@ body {
     padding: 2rem;
     color: white;
     box-sizing: border-box;
-    overflow-y: auto; /* Enable scrolling for individual slides */
 }
 
 /* Content wrapper to maintain consistent spacing */
@@ -45,8 +43,7 @@ body {
     width: 100%;
     max-width: 600px;
     margin: auto;
-    padding-bottom: 120px;
-    overflow-y: visible;/* Space for navigation */
+    padding-bottom: 60px; /* Space for navigation */
 }
 
 .carousel-slide.active {
@@ -84,33 +81,11 @@ body {
     margin: 2rem 0;
 }
 
-/* Ensure top list has max height and scrolls if needed */
 .top-list {
-    max-height: 50vh; /* Set a max height to restrict the list size */
-    overflow-y: auto; /* Enable vertical scrolling */
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
     width: 100%;
-    padding-bottom: 20px; /* Add padding for better spacing */
-    scrollbar-width: thin; /* For modern browsers, make the scrollbar thin */
-    scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
-}
-
-/* Scrollbar styling to make it more visually appealing */
-.top-list::-webkit-scrollbar {
-    width: 8px;
-}
-
-.top-list::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-}
-
-.top-list::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
-}
-
-.top-list::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.5);
 }
 
 .top-item {
@@ -166,14 +141,6 @@ body {
     border-radius: 50%;
     margin: 2rem 0;
     object-fit: cover;
-}
-
-.genre-slide .highlight {
-    font-size: 4rem;
-    font-weight: 900;
-    margin: 2rem 0;
-    text-transform: capitalize; /* Capitalizes the first letter of each word */
-    color: white; /* Ensure visibility */
 }
 
 .transition-graphic {
