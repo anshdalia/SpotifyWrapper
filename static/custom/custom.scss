@@ -34,4 +34,13 @@ $body-color: #ffffff; /*default text color is blue*/
     border-radius: 4px;
 }
 
+@font-face {
+    font-family: 'HeaderFont';
+    src: url('/static/images/NEON____.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
 
+h3 {
+    font-family: 'HeaderFont', sans-serif;
+    }

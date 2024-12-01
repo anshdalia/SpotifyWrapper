@@ -28,11 +28,36 @@
     </style>
 </head>
 <body class="page-end-spacing">
+
+    <!-- style for header -->
+<style>
+    h3 {
+        justify-content: center;
+        font-size: 8rem;
+        display: flex;
+    }
+
+    #music {
+        color: #aaff00;
+    }
+    #wrap {
+        color: #00fff8;
+    }
+
+</style>
+
 <div class="container-fluid">
     <!-- header row -->
-    <div class="row-4">
-        <img src="{% static 'images/powder_background.png' %}" alt="Responsive Image" class="img-fluid" style="width: 100%; height: auto; max-height: 240px;">
-    </div>
+    <h3 class="justify-content-between text-center">
+        <div class="col col-1">
+            <img src="{% static 'images/Musicwrap_logo.png' %}" alt="Responsive Image" class="img-fluid">
+        </div>
+        <div class="d-flex">
+            <div id="music">Music</div><div id="wrap">Wrap</div>
+        </div>
+        <div class="d-flex col-1"></div>
+
+    </h3>
 
     <!-- Add holiday greeting -->
     {% if theme == "halloween" %}
@@ -54,7 +79,7 @@
                 <button onclick="window.location.href='{% url 'friend_request' %}'" class="btn btn-secondary">Create a new Duo Wrap</button>
             </div>
             <div class="col col-lg-5">
-                <button onclick="window.location.href='{% url 'public_wraps' %}'" class="btn btn-secondary">View Public Wraps</button>
+                <button onclick="window.location.href='{% url 'public_wraps' %}'" class="btn btn-primary">View Public Wraps</button>
             </div>
             <div class="col col-lg-1 ms-auto">
                 <button onclick="window.location.href='{% url 'user:profile' %}'" class="btn btn-primary">Profile</button>
