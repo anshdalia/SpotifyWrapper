@@ -86,6 +86,13 @@ function sanitizeGenre(genre) {
         .trim();
 }
 
+function capitalizeGenre(genre) {
+    // Split the genre into words and capitalize each word
+    return genre.split(/\s+/)
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
 function findBestGenreMatch(genre) {
     const sanitizedGenre = sanitizeGenre(genre);
 
@@ -106,6 +113,9 @@ function findBestGenreMatch(genre) {
 }
 
 function generateGenreImage(genre) {
+    // Capitalize the genre text
+    const capitalizedGenre = capitalizeGenre(genre);
+
     // Find the best matching genre configuration
     const genreKey = findBestGenreMatch(genre);
     const genreConfig = GENRE_GRADIENTS[genreKey];
@@ -156,8 +166,8 @@ function generateGenreImage(genre) {
     text.setAttribute("font-family", "Arial, sans-serif");
     text.setAttribute("font-weight", "bold");
     text.setAttribute("fill", genreConfig.textColor);
-    text.setAttribute("font-size", genre.length > 12 ? "20" : "32");
-    text.textContent = genre;
+    text.setAttribute("font-size", capitalizedGenre.length > 12 ? "20" : "32");
+    text.textContent = capitalizedGenre;
     svg.appendChild(text);
 
     return svg;

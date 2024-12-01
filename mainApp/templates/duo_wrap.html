@@ -6,6 +6,7 @@
     <title>{{ year }} Duo Wrapped: {{ user1.username }} & {{ user2.username }}</title>
     {% load static %}
     {% load wrap_filters %}
+    <script src="{% static 'js/genre-image-generator.js' %}"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <link href="{% static 'custom/duo_wrap.css' %}" rel="stylesheet">
 </head>
@@ -134,21 +135,31 @@
             </div>
         </div>
 
-        <!-- Genre Comparison Slide with Image Placeholders -->
+        <!-- Replace the existing genre-slide div with this updated version -->
         <div class="carousel-slide genre-slide">
             <div class="slide-content">
                 <div class="versus-divider">VS</div>
                 <div class="genre-clash-overlay"></div>
                 <div class="comparison-container">
                     <div class="comparison-item">
-                        <img class="genre-image animate__animated animate__zoomIn"
-                             src="{{ user1_genre_image_url|default:'/api/placeholder/200/200' }}">
+                        <!-- Replace img with a placeholder for dynamic SVG generation -->
+                        <div id="user1-genre-image-container">
+                            <img class="genre-image animate__animated animate__zoomIn"
+                                 src="/api/placeholder/200/200"
+                                 alt="{{ duo_wrap.top_genre_comparison.user1 }}"
+                                 id="user1-genre-image-placeholder">
+                        </div>
                         <div class="highlight">{{ duo_wrap.user1.username }}'s Top Genre</div>
                         <div class="subtitle">{{ duo_wrap.top_genre_comparison.user1 }}</div>
                     </div>
                     <div class="comparison-item">
-                        <img class="genre-image animate__animated animate__zoomIn"
-                             src="{{ user2_genre_image_url|default:'/api/placeholder/200/200' }}">
+                        <!-- Replace img with a placeholder for dynamic SVG generation -->
+                        <div id="user2-genre-image-container">
+                            <img class="genre-image animate__animated animate__zoomIn"
+                                 src="/api/placeholder/200/200"
+                                 alt="{{ duo_wrap.top_genre_comparison.user2 }}"
+                                 id="user2-genre-image-placeholder">
+                        </div>
                         <div class="highlight">{{ duo_wrap.user2.username }}'s Top Genre</div>
                         <div class="subtitle">{{ duo_wrap.top_genre_comparison.user2 }}</div>
                     </div>
@@ -223,6 +234,25 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowRight') nextSlide();
             if (e.key === 'ArrowLeft') previousSlide();
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            // Use the genre image generation function from the previous artifact
+            const user1Genre = "{{ duo_wrap.top_genre_comparison.user1 }}";
+            const user2Genre = "{{ duo_wrap.top_genre_comparison.user2 }}";
+
+            // Replace user1 genre image
+            const user1Placeholder = document.getElementById('user1-genre-image-placeholder');
+            if (user1Placeholder) {
+                const user1Svg = generateGenreImage(user1Genre);
+                user1Placeholder.parentNode.replaceChild(user1Svg, user1Placeholder);
+            }
+
+            // Replace user2 genre image
+            const user2Placeholder = document.getElementById('user2-genre-image-placeholder');
+            if (user2Placeholder) {
+                const user2Svg = generateGenreImage(user2Genre);
+                user2Placeholder.parentNode.replaceChild(user2Svg, user2Placeholder);
+            }
         });
     </script>
 </body>

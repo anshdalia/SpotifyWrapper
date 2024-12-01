@@ -14,8 +14,8 @@
     <link href="{% static 'custom/single_wrap.css' %}" rel="stylesheet">
 </head>
 <body>
-    <!-- Added scroll-container wrapper to enable scrolling -->
     <div class="scroll-container">
+    <!-- Added scroll-container wrapper to enable scrolling -->
         <div class="carousel-container">
             <!-- Welcome Slide -->
             <div class="carousel-slide welcome-slide active">
@@ -145,9 +145,9 @@
                     </ul>
                 </div>
             </div>-->
-        
-        
-        
+
+
+
             <!-- Minutes Listened Slide -->
             <div class="carousel-slide minutes-slide">
                 <div class="slide-content">
@@ -173,7 +173,7 @@
                 <button class="menu-button" onclick="window.location.href='{% url 'main_menu' %}'">Back to Menu</button>
             </div>
         </div>
-    </div> <!-- End of scroll-container -->
+    </div>
 
     <!-- JavaScript for slide navigation -->
     <script>
@@ -225,6 +225,18 @@
         document.addEventListener('DOMContentLoaded', () => {
             const genre = "{{ wrap.top_genre }}";
             replaceGenreImage(genre);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.carousel-slide');
+
+            slides.forEach(slide => {
+                slide.addEventListener('wheel', event => {
+                    if (slide.contains(event.target)) {
+                        event.stopPropagation();
+                    }
+                });
+            });
         });
     </script>
 </body>
