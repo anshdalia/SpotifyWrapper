@@ -14,6 +14,10 @@ sass static/custom/custom.scss static/custom/custom.css
   border-color: #aaff00;
 }
 
+.list-group {
+  border-color: #aaff00;
+}
+
 /* import bootstrap after making all modifications to bootstrap */
 /*!
  * Bootstrap  v5.3.3 (https://getbootstrap.com/)
@@ -11866,6 +11870,14 @@ textarea.form-control-lg {
   border: 1px solid #00fff8;
   padding: 10px;
   border-radius: 4px;
+}
+
+.list-group {
+  border-color: #aaff00;
+}
+
+.list-group-item {
+  border-color: #aaff00;
 }
 
 /*# sourceMappingURL=custom.css.map */

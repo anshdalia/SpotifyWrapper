@@ -8,12 +8,12 @@
     <title>Main Menu</title>
     <link rel="stylesheet" href="{% static 'custom/custom.css' %}">
 
-    <!-- Load holiday-specific styles if theme is set -->
+    <!-- Load holiday-specific styles if theme is set 
     {% if theme == "halloween" %}
         <link rel="stylesheet" href="{% static 'custom/halloween.css' %}">
     {% elif theme == "christmas" %}
         <link rel="stylesheet" href="{% static 'custom/christmas.css' %}">
-    {% endif %}
+    {% endif %}-->
 
     <style>
         /* Add extra spacing between sections */
@@ -53,25 +53,28 @@
             <div class="col col-lg-2">
                 <button onclick="window.location.href='{% url 'friend_request' %}'" class="btn btn-secondary">Create a new Duo Wrap</button>
             </div>
-            <div class="col col-lg-2"> <!-- Add your new button here -->
+            <div class="col col-lg-5">
                 <button onclick="window.location.href='{% url 'public_wraps' %}'" class="btn btn-secondary">View Public Wraps</button>
             </div>
             <div class="col col-lg-1 ms-auto">
                 <button onclick="window.location.href='{% url 'user:profile' %}'" class="btn btn-primary">Profile</button>
             </div>
             <div class="col col-lg-2">
-                <button onclick="window.location.href='{% url 'contact' %}'" class="btn btn-secondary">Contact</button>
+                <button onclick="window.location.href='{% url 'contact' %}'" class="btn btn-secondary">Contact Developers</button>
             </div>
         </div>
-            
-        </div>
+    </div>
+
+
+
 
         <!-- Display Name -->
+        <!--
         <div class="section-spacing">
             Display Name (From Your Spotify Account): <span id="displayName"></span>
-        </div>
+        </div>-->
 
-        <!-- Spotify Data Sections -->
+        <!-- Spotify Data Sections 
         <h2 class="section-spacing">Recently Played Tracks</h2>
         <ul class="list-group">
             {% for track in recent_tracks %}
@@ -85,26 +88,11 @@
                 <li class="list-group-item">No recently played tracks available.</li>
             {% endfor %}
         </ul>
-
+        
         <pre>{{ recent_tracks|safe }}</pre>
+        -->
 
-        <h2 class="section-spacing">Top Tracks</h2>
-        <ul class="list-group">
-            {% for track in top_tracks %}
-                <li class="list-group-item">
-                    {{ track.name }} by
-                    {% for artist in track.artists %}
-                        {{ artist.name }}{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                    <!-- Play and Pause buttons -->
-                    <button onclick="playPreview('{{ track.preview_url }}', this)" class="play-btn btn btn-primary">Play</button>
-                    <button onclick="pausePreview()" class="pause-btn btn btn-secondary" style="display:none;">Pause</button>
-                </li>
-            {% empty %}
-                <li class="list-group-item">No top tracks available.</li>
-            {% endfor %}
-        </ul>
-
+        <!--
         <h2 class="section-spacing">Top Artists</h2>
         <ul class="list-group">
             {% for artist in top_artists %}
@@ -112,36 +100,56 @@
             {% empty %}
                 <li class="list-group-item">No top artists available.</li>
             {% endfor %}
-        </ul>
+        </ul>-->
+
 
         <!-- Spotify Wraps Section -->
-        <h2>Your Spotify Wraps</h2>
-        <ul>
+        <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+            <h2 class="text-center">Your Spotify Wraps</h2>
+        </li>
             {% for wrap in user_wraps %}
-                <li>
-                    <strong>{{ wrap.name }}</strong> ({{ wrap.get_term_type_display }}) - Created on {{ wrap.created_at|date:"M d, Y" }}
-                    <a href="{% url 'single_wrap_view' wrap.id %}">View</a>
-                    <button onclick="deleteWrap({{ wrap.id }})" class="btn btn-danger">Delete</button>
+                <li id="wrap-{{ wrap.id }}" class="list-group-item list-group-item-action">
+                    <div class="row align-items-center">
+                        <!-- Wrap Name -->
+                        <div class="col col-4">
+                            <a href="{% url 'single_wrap_view' wrap.id %}">{{ wrap.name }}</a>
+                        </div>
+                        <!-- Date Created -->
+                        <div class="col col-6">
+                            Date Created: {{ wrap.created_at|date:"m/d/Y" }}
+                        </div>
+                        <!-- Delete Button -->
+                        <div class="col col-2 text-end">
+                            <button class="btn btn-danger btn-sm" onclick="deleteWrap({{ wrap.id }})">Delete</button>
+                        </div>
+                    </div>
                 </li>
             {% empty %}
-                <li>No wraps available.</li>
+                <li class="list-group-item text-center">No Wraps available.</li>
             {% endfor %}
         </ul>
-        <h2 class="section-spacing">Your Duo Wraps</h2>
+
+        <br><br>
+
+        <!-- Duo Wraps list -->
         <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+            <h2 class="text-center">Your Duo Wraps</h2>
+        </li>
             {% for duo_wrap in duo_wraps %}
                 <li id="duo-wrap-{{ duo_wrap.id }}" class="list-group-item list-group-item-action">
                     <div class="row align-items-center">
                         <!-- Duo Wrap Name -->
-                        <div class="col col-3">
+                        <div class="col col-4">
                             <a href="{% url 'duo_wrap' duo_wrap.id %}">{{ duo_wrap.wrap_name }}</a>
                         </div>
                         <!-- Date Created -->
-                        <div class="col col-3">
+                        <div class="col col-4">
                             Date Created: {{ duo_wrap.created_at|date:"m/d/Y" }}
                         </div>
                         <!-- Made With -->
-                        <div class="col col-3">
+                        <div class="col col-2">
                             Made with:
                             {% if duo_wrap.user1 == user %}
                                 {{ duo_wrap.user2.username }}
@@ -150,15 +158,35 @@
                             {% endif %}
                         </div>
                         <!-- Delete Button -->
-                        <div class="col col-3 text-end">
+                        <div class="col col-2 text-end">
                             <button class="btn btn-danger btn-sm" onclick="deleteDuoWrap({{ duo_wrap.id }})">Delete</button>
                         </div>
                     </div>
                 </li>
             {% empty %}
-                <li class="list-group-item">No Duo Wraps available.</li>
+                <li class="list-group-item text-center">No Duo Wraps available.</li>
             {% endfor %}
         </ul>
+
+    <br><br>
+
+    <h2 class="section-spacing text-center">Top Tracks</h2>
+        <ul class="list-group">
+            {% for track in top_tracks %}
+                <li class="list-group-item">
+                    {{ track.name }} by
+                    {% for artist in track.artists %}
+                        {{ artist.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                     Play and Pause buttons
+                    <button onclick="playPreview('{{ track.preview_url }}', this)" class="play-btn btn btn-primary">Play</button>
+                    <button onclick="pausePreview()" class="pause-btn btn btn-secondary" style="display:none;">Pause</button>
+                </li>
+            {% empty %}
+                <li class="list-group-item">No top tracks available.</li>
+            {% endfor %}
+        </ul> 
+
 
     </div>
 </div>

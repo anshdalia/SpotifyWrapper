@@ -21,11 +21,23 @@
     </style>
 </head>
 <body>
-    <h1>Create a New Single Wrap</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Create Wrap</button>
-    </form>
+<br><br><br>
+<div class="row justify-content-center">
+    <div class="col col-5">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">Create a New Wrap</div>
+            <div class="card-body">
+    
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Create Wrap</button>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

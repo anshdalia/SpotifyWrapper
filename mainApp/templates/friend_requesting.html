@@ -11,6 +11,8 @@
 <body>
 <br>
 
+<div class="container">
+<br>
     <ul class="invite_list">
         {% for invite in invite_set %}
             <li>
@@ -24,22 +26,29 @@
 
             </li>
             {% empty %}
-            <p>You have no invites</p>
+            <p class="text-center">You have no pending invites</p>
         {% endfor %}
     </ul>
 
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Send Friend Invite</button>
-</form>
+<br>
+<div class="row justify-content-center">
+    <div class="col col-6">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">Send a Duo Wrap invite</div>
+            <div class="card-body">
 
-
-
-
-
-
-
-    <button onclick="window.location.href='{% url 'main_menu' %}'" class="btn btn-secondary">Back to Main Menu</button>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Send Friend Invite</button>
+                </form>
+                
+                <button onclick="window.location.href='{% url 'main_menu' %}'" class="btn btn-secondary">Back to Main Menu</button>
+                
+            </div>
+        </div>
+    </div>
+</div>
+</div>
 </body>
 </html>

@@ -17,6 +17,10 @@ $body-color: #ffffff; /*default text color is blue*/
     border-color: #aaff00;
 }
 
+.list-group {
+    border-color: #aaff00;
+}
+
 
 /* import bootstrap after making all modifications to bootstrap */
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
@@ -29,4 +33,5 @@ $body-color: #ffffff; /*default text color is blue*/
     padding: 10px;
     border-radius: 4px;
 }
+
 

@@ -7,13 +7,31 @@
     <link rel="stylesheet" href="{% static 'custom/custom.css' %}">
 </head>
 <body>
-    <h1>Welcome to your Profile, {{ user.username }}!</h1>
-    <p>Firstname: {{user.first_name}}</p>
-    <p>Lastname: {{user.last_name}}</p>
-    <p>Email: {{ user.email }}</p>
-    <button onclick="window.location.href='{% url 'user:logout' %}'" class="btn btn-primary">Logout</button>
-    <button onclick="window.location.href='{% url 'main_menu' %}'" class = "btn btn-secondary">Back to Main Menu</button>
-    <button onclick="window.location.href='{% url 'user:delete_account' %}'" class="btn btn-primary">Delete Account</button>
+
+<div class="container mt-5">
+    <br><br><br><br><br>
+    <div class="row text-center justify-content-center">
+        <h1>Welcome to your Profile, {{ user.username }}!</h1>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card shadow-lg border-secondary">
+                <div class="card-body">
+                    <p>Username: {{ user.username }}</p>
+                    <p>Firstname: {{user.first_name}}</p>
+                    <p>Lastname: {{user.last_name}}</p>
+                    <p>Email: {{ user.email }}</p>
+
+                    <button onclick="window.location.href='{% url 'user:logout' %}'" class="btn btn-primary">Logout</button>
+                    <button onclick="window.location.href='{% url 'main_menu' %}'" class = "btn btn-secondary">Back to Main Menu</button>
+                    <button onclick="window.location.href='{% url 'user:delete_account' %}'" class="btn btn-primary">Delete Account</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
