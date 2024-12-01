@@ -143,6 +143,14 @@ body {
     object-fit: cover;
 }
 
+.genre-slide .highlight {
+    font-size: 4rem;
+    font-weight: bold;
+    text-transform: capitalize; /* Capitalizes the first letter of each word */
+    letter-spacing: 3px;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+}
+
 .transition-graphic {
     width: 200px;
     height: 200px;
